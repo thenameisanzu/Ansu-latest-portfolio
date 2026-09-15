@@ -56,15 +56,25 @@ export default function Hero() {
       />
 
       <div className="relative z-10 w-full">
-        <p className="font-body text-sm md:text-base text-ink-soft mb-4 md:mb-6">
-          Angamāli, Kerala — available for select projects
-        </p>
+        <div className="flex items-center gap-2.5 mb-4 md:mb-6">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="status-dot-pulse absolute inline-flex h-full w-full rounded-full bg-sky opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky" />
+          </span>
+          <p className="font-body text-sm md:text-base text-ink-soft">
+            Angamāli, Kerala — available for select projects
+          </p>
+        </div>
 
         <h1 className="font-display font-extrabold text-ink leading-[0.92] tracking-tight text-[13vw] md:text-[7.2vw]">
           {lines.map((line, i) => (
             <span key={line} className="block overflow-hidden">
               <motion.span
-                className="block"
+                className={`block ${
+                  line.includes("Aethra")
+                    ? "bg-gradient-to-r from-ink via-violet to-ink bg-clip-text text-transparent"
+                    : ""
+                }`}
                 initial={{ y: "110%" }}
                 animate={{ y: "0%" }}
                 transition={{
@@ -98,9 +108,10 @@ export default function Hero() {
                 ?.scrollIntoView({ behavior: "smooth" });
             }}
             data-cursor="hover"
-            className="hidden md:inline-block font-body text-sm font-medium border-b border-ink pb-1 shrink-0"
+            className="group relative hidden md:inline-flex items-center gap-2 font-body text-sm font-medium pb-1 shrink-0 text-ink"
           >
-            See the work
+            <span>See the work</span>
+            <span className="block w-full h-[1.5px] bg-gradient-to-r from-violet via-lilac to-sky absolute bottom-0 left-0 transition-transform origin-left group-hover:scale-x-110" />
           </a>
         </motion.div>
       </div>

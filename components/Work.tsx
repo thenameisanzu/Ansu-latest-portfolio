@@ -65,7 +65,7 @@ export default function Work() {
             <article
               key={p.name}
               data-cursor="hover"
-              className="group relative shrink-0 w-full md:w-[62vw] lg:w-[46vw] aspect-[4/5] md:aspect-[16/11] rounded-2xl overflow-hidden flex flex-col justify-end p-6 md:p-8"
+              className="group relative shrink-0 w-full md:w-[62vw] lg:w-[46vw] aspect-[4/5] md:aspect-[16/11] rounded-2xl overflow-hidden flex flex-col justify-end p-6 md:p-8 border border-ink/10 shadow-sm transition-all duration-500 hover:shadow-[0_20px_50px_-15px_rgba(155,142,199,0.35)] hover:-translate-y-1"
               style={{ backgroundColor: p.color }}
             >
               <div
@@ -75,10 +75,12 @@ export default function Work() {
                     : "bg-ink/0 group-hover:bg-ink/10"
                 }`}
               />
-              <div className="relative">
+              <div className="relative z-10">
                 <span
-                  className={`font-body text-xs md:text-sm ${
-                    p.dark ? "text-cream/70" : "text-ink/65"
+                  className={`inline-block font-body text-xs font-medium px-3 py-1 rounded-full backdrop-blur-md mb-2 border ${
+                    p.dark
+                      ? "bg-cream/15 text-cream border-cream/20"
+                      : "bg-ink/10 text-ink border-ink/15"
                   }`}
                 >
                   {p.tag}

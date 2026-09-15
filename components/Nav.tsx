@@ -69,9 +69,19 @@ export default function Nav() {
             animate={{ clipPath: "inset(0 0 0% 0)" }}
             exit={{ clipPath: "inset(0 0 100% 0)" }}
             transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-40 bg-ink flex flex-col justify-center px-6 md:px-10"
+            className="fixed inset-0 z-40 bg-ink flex flex-col justify-center px-6 md:px-10 overflow-hidden"
           >
-            <nav className="flex flex-col gap-2 md:gap-3">
+            {/* Ambient menu glow */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute top-1/3 -right-20 w-[70vw] h-[70vw] max-w-[600px] max-h-[600px] rounded-full opacity-25 blur-[120px]"
+              style={{
+                background:
+                  "radial-gradient(circle, var(--color-violet) 0%, var(--color-lilac) 45%, var(--color-sky) 85%, transparent 100%)",
+              }}
+            />
+
+            <nav className="relative z-10 flex flex-col gap-2 md:gap-3">
               {links.map((l, i) => (
                 <motion.a
                   key={l.href}
@@ -83,10 +93,13 @@ export default function Nav() {
                   initial={{ y: 40, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.15 + i * 0.06, duration: 0.5 }}
-                  className="font-display font-semibold text-cream text-[13vw] md:text-6xl leading-[1.05] hover:text-violet transition-colors"
+                  className="group flex items-center gap-4 font-display font-semibold text-cream text-[13vw] md:text-6xl leading-[1.05] transition-colors"
                   data-cursor="hover"
                 >
-                  {l.label}
+                  <span className="w-2.5 h-2.5 rounded-full bg-sky opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cream group-hover:via-lilac group-hover:to-sky transition-all">
+                    {l.label}
+                  </span>
                 </motion.a>
               ))}
             </nav>
@@ -95,7 +108,7 @@ export default function Nav() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="mt-10 md:mt-14 flex flex-wrap gap-x-6 gap-y-2"
+              className="relative z-10 mt-10 md:mt-14 flex flex-wrap gap-x-6 gap-y-2"
             >
               {socials.map((s) => (
                 <a
@@ -103,7 +116,7 @@ export default function Nav() {
                   href={s.href}
                   target={s.label === "Email" ? undefined : "_blank"}
                   rel="noreferrer"
-                  className="font-body text-sm text-cream/60 hover:text-cream transition-colors"
+                  className="font-body text-sm text-cream/60 hover:text-lilac transition-colors"
                   data-cursor="hover"
                 >
                   {s.label}
