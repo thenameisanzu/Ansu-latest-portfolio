@@ -52,7 +52,7 @@ export default function Contact() {
           <a
             href={`mailto:${email}?subject=Project%20Inquiry%20—%20Ansu%20V%20S`}
             data-cursor="hover"
-            className="group block font-display font-extrabold text-ink text-[clamp(1.25rem,5.6vw,3.75rem)] md:text-5xl lg:text-6xl tracking-tight leading-none transition-all duration-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-violet hover:via-lilac hover:to-sky max-w-full text-center"
+            className="group inline-block font-display font-extrabold text-ink text-[clamp(1.25rem,5.6vw,3.75rem)] md:text-5xl lg:text-6xl tracking-tight leading-[1.18] py-2 px-2 transition-all duration-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-violet hover:via-lilac hover:to-sky max-w-full text-center"
             title="Click or slide below to contact"
           >
             {email}
