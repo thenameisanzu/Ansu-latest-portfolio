@@ -29,17 +29,18 @@ export default function BackToTop() {
           transition={{ duration: 0.3 }}
           data-cursor="hover"
           aria-label="Back to top"
-          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 w-11 h-11 md:w-12 md:h-12 rounded-full bg-cream/95 text-ink border border-ink/15 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-ink hover:text-cream hover:scale-110 transition-all duration-300"
+          className="fixed bottom-32 right-6 md:bottom-36 md:right-8 z-40 w-10 h-10 md:w-11 md:h-11 rounded-full bg-ink text-cream border border-white/20 shadow-[0_8px_25px_rgba(32,28,38,0.25)] backdrop-blur-md flex items-center justify-center hover:bg-violet hover:scale-110 active:scale-95 transition-all duration-300 group"
         >
           <svg
             viewBox="0 0 24 24"
-            width="18"
-            height="18"
+            width="16"
+            height="16"
             stroke="currentColor"
-            strokeWidth="2.2"
+            strokeWidth="2.4"
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
+            className="group-hover:-translate-y-0.5 transition-transform"
           >
             <path d="M12 19V5M5 12l7-7 7 7" />
           </svg>
