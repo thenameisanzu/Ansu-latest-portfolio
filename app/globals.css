@@ -100,32 +100,37 @@ body {
   }
 }
 
-/* Marquee with GPU 3D acceleration */
-@keyframes marquee-left {
-  from {
-    transform: translate3d(0, 0, 0);
+/* Seamless Infinite 60fps Marquee with Hardware Acceleration */
+@keyframes marquee-seamless {
+  0% {
+    transform: translate3d(0%, 0, 0);
   }
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-@keyframes marquee-right {
-  from {
-    transform: translate3d(-50%, 0, 0);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
+  100% {
+    transform: translate3d(-100%, 0, 0);
   }
 }
-.marquee-track {
-  animation: marquee-left 32s linear infinite;
+
+@keyframes marquee-seamless-reverse {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0%, 0, 0);
+  }
+}
+
+.animate-marquee-track {
+  display: flex;
+  flex-shrink: 0;
+  animation: marquee-seamless 28s linear infinite;
   will-change: transform;
-  backface-visibility: hidden;
 }
-.marquee-track-reverse {
-  animation: marquee-right 38s linear infinite;
+
+.animate-marquee-track-reverse {
+  display: flex;
+  flex-shrink: 0;
+  animation: marquee-seamless-reverse 32s linear infinite;
   will-change: transform;
-  backface-visibility: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {

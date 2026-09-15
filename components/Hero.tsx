@@ -63,7 +63,7 @@ export default function Hero() {
       <div
         ref={blobRef}
         aria-hidden
-        className="pointer-events-none absolute -top-1/4 right-[-10%] w-[70vw] h-[70vw] max-w-[820px] max-h-[820px] rounded-full opacity-70 blur-[80px] will-change-transform"
+        className="pointer-events-none absolute -top-1/4 right-[-10%] w-[70vw] h-[70vw] max-w-[820px] max-h-[820px] rounded-full opacity-65 blur-[55px] will-change-transform transform-gpu"
         style={{
           background:
             "radial-gradient(circle at 30% 30%, var(--color-violet), var(--color-lilac) 45%, var(--color-sky) 75%, transparent 78%)",
@@ -81,16 +81,16 @@ export default function Hero() {
           </p>
         </div>
 
-        <h1 className="font-display font-extrabold text-ink leading-[0.92] tracking-tight text-[clamp(2.6rem,11.2vw,7.2vw)]">
+        <h1 className="font-display font-extrabold text-ink leading-[0.98] tracking-tight text-[clamp(2.6rem,11.2vw,7.2vw)]">
           {lines.map((line, i) => (
-            <span key={line} className="block overflow-hidden">
+            <span key={line} className="block overflow-hidden pb-2 md:pb-3 -mb-2 md:-mb-3">
               <motion.span
-                className={`block ${
+                className={`block pb-1 ${
                   line.includes("Aethra")
                     ? "bg-gradient-to-r from-ink via-violet to-ink bg-clip-text text-transparent"
                     : ""
                 }`}
-                initial={{ y: "110%" }}
+                initial={{ y: "115%" }}
                 animate={{ y: "0%" }}
                 transition={{
                   duration: 0.9,
