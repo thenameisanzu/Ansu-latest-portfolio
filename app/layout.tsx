@@ -14,7 +14,7 @@ import CustomCursor from "@/components/CustomCursor";
 export const metadata: Metadata = {
   title: "Ansu V S — Developer & Designer",
   description:
-    "Freelance full-stack developer and designer. Founder of Aethra Digital Solutions.",
+    "Freelance full-stack developer and designer. Dreamer of Aethra Digital Solutions.",
 };
 
 export default function RootLayout({

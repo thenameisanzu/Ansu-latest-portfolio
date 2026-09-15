@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
-const lines = ["Developer.", "Designer.", "Founder of Aethra."];
+const lines = ["Developer.", "Designer.", "Dreamer of Aethra."];
 
 export default function Hero() {
   const blobRef = useRef<HTMLDivElement>(null);
