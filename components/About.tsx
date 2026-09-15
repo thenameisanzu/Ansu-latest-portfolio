@@ -43,18 +43,49 @@ export default function About() {
           </div>
         </motion.div>
 
-        {/* Right column / below on mobile: Bio paragraph */}
-        <motion.p
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-10%" }}
-          transition={{ duration: 0.7 }}
-          className="md:col-span-6 md:col-start-7 font-display font-semibold text-ink text-[clamp(1.45rem,6.2vw,2.5rem)] md:text-4xl leading-[1.25] tracking-tight"
-        >
-          I design and build websites end to end — pitch, design, code,
-          launch. Most of my work lives under Aethra, my own studio, where I
-          make brands feel expensive without the bloat.
-        </motion.p>
+        {/* Right column / below on mobile: Bio paragraph & Action CTAs */}
+        <div className="md:col-span-6 md:col-start-7 flex flex-col gap-6">
+          <motion.p
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.7 }}
+            className="font-display font-semibold text-ink text-[clamp(1.45rem,6.2vw,2.5rem)] md:text-4xl leading-[1.25] tracking-tight"
+          >
+            I design and build websites end to end — pitch, design, code,
+            launch. Most of my work lives under Aethra, my own studio, where I
+            make brands feel expensive without the bloat.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-wrap items-center gap-3 pt-2"
+          >
+            <a
+              href="#contact"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              data-cursor="hover"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-ink text-cream font-body text-xs md:text-sm font-medium hover:bg-violet transition-colors"
+            >
+              <span>Start a Project</span>
+              <span className="text-xs">→</span>
+            </a>
+            <a
+              href="mailto:ansuvs047@gmail.com?subject=Project%20Inquiry%20—%2015-Min%20Intro%20Call"
+              data-cursor="hover"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-ink/5 border border-ink/15 text-ink font-body text-xs md:text-sm font-medium hover:bg-cream hover:border-ink/30 transition-all"
+            >
+              <span>Book 15-min Call</span>
+              <span className="text-xs text-ink/60">↗</span>
+            </a>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

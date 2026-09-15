@@ -6,6 +6,7 @@ import { socials } from "@/lib/content";
 import { SocialIcon } from "@/components/SocialIcons";
 
 const links = [
+  { label: "Services", href: "#services" },
   { label: "Work", href: "#work" },
   { label: "Skills", href: "#skills" },
   { label: "Aethra", href: "#aethra" },
