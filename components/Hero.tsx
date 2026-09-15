@@ -6,18 +6,21 @@ import { motion } from "framer-motion";
 const lines = ["Developer.", "Designer.", "Dreamer of Aethra."];
 
 export default function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
   const blobRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (window.matchMedia("(hover: none)").matches) return;
     const blob = blobRef.current;
-    if (!blob) return;
+    const section = sectionRef.current;
+    if (!blob || !section) return;
 
     let x = 0;
     let y = 0;
     let tx = 0;
     let ty = 0;
     let raf = 0;
+    let isVisible = true;
 
     const onMove = (e: MouseEvent) => {
       const { innerWidth, innerHeight } = window;
@@ -26,29 +29,41 @@ export default function Hero() {
     };
 
     const loop = () => {
-      x += (tx - x) * 0.05;
-      y += (ty - y) * 0.05;
-      blob.style.transform = `translate(${x}px, ${y}px)`;
+      if (isVisible) {
+        x += (tx - x) * 0.05;
+        y += (ty - y) * 0.05;
+        blob.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
 
-    window.addEventListener("mousemove", onMove);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(section);
+
+    window.addEventListener("mousemove", onMove, { passive: true });
     return () => {
       window.removeEventListener("mousemove", onMove);
       cancelAnimationFrame(raf);
+      observer.disconnect();
     };
   }, []);
 
   return (
     <section
+      ref={sectionRef}
       id="top"
       className="relative min-h-[100svh] flex items-end overflow-hidden px-6 md:px-10 pb-14 md:pb-16 pt-32"
     >
       <div
         ref={blobRef}
         aria-hidden
-        className="pointer-events-none absolute -top-1/4 right-[-10%] w-[70vw] h-[70vw] max-w-[820px] max-h-[820px] rounded-full opacity-70 blur-[80px]"
+        className="pointer-events-none absolute -top-1/4 right-[-10%] w-[70vw] h-[70vw] max-w-[820px] max-h-[820px] rounded-full opacity-70 blur-[80px] will-change-transform"
         style={{
           background:
             "radial-gradient(circle at 30% 30%, var(--color-violet), var(--color-lilac) 45%, var(--color-sky) 75%, transparent 78%)",
@@ -66,7 +81,7 @@ export default function Hero() {
           </p>
         </div>
 
-        <h1 className="font-display font-extrabold text-ink leading-[0.92] tracking-tight text-[13vw] md:text-[7.2vw]">
+        <h1 className="font-display font-extrabold text-ink leading-[0.92] tracking-tight text-[clamp(2.6rem,11.2vw,7.2vw)]">
           {lines.map((line, i) => (
             <span key={line} className="block overflow-hidden">
               <motion.span

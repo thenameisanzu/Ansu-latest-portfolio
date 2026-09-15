@@ -17,21 +17,45 @@ export default function CustomCursor() {
     let mouseY = 0;
     let ringX = 0;
     let ringY = 0;
+    let raf = 0;
+    let isRunning = false;
+
+    const loop = () => {
+      const dx = mouseX - ringX;
+      const dy = mouseY - ringY;
+      ringX += dx * 0.18;
+      ringY += dy * 0.18;
+      ring.style.transform = `translate3d(${ringX - 18}px, ${ringY - 18}px, 0)`;
+
+      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+        raf = requestAnimationFrame(loop);
+      } else {
+        isRunning = false;
+      }
+    };
+
+    const startLoop = () => {
+      if (!isRunning && !document.hidden) {
+        isRunning = true;
+        raf = requestAnimationFrame(loop);
+      }
+    };
 
     const onMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      dot.style.transform = `translate(${mouseX - 3}px, ${mouseY - 3}px)`;
+      dot.style.transform = `translate3d(${mouseX - 3}px, ${mouseY - 3}px, 0)`;
+      startLoop();
     };
 
-    let raf = 0;
-    const loop = () => {
-      ringX += (mouseX - ringX) * 0.16;
-      ringY += (mouseY - ringY) * 0.16;
-      ring.style.transform = `translate(${ringX - 18}px, ${ringY - 18}px)`;
-      raf = requestAnimationFrame(loop);
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(raf);
+        isRunning = false;
+      } else {
+        startLoop();
+      }
     };
-    raf = requestAnimationFrame(loop);
 
     const onOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -46,14 +70,16 @@ export default function CustomCursor() {
       }
     };
 
-    window.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseover", onOver);
-    document.addEventListener("mouseout", onOut);
+    window.addEventListener("mousemove", onMove, { passive: true });
+    document.addEventListener("mouseover", onOver, { passive: true });
+    document.addEventListener("mouseout", onOut, { passive: true });
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       window.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseover", onOver);
       document.removeEventListener("mouseout", onOut);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       cancelAnimationFrame(raf);
     };
   }, []);

@@ -6,12 +6,12 @@ export default function AethraSection() {
   return (
     <section
       id="aethra"
-      className="relative overflow-hidden px-6 md:px-10 py-24 md:py-36 bg-ink text-cream rounded-t-[2rem] md:rounded-t-[3rem]"
+      className="relative overflow-hidden px-6 md:px-10 py-16 md:py-36 bg-ink text-cream rounded-t-[2rem] md:rounded-t-[3rem]"
     >
       {/* Subtle iridescent studio glow */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-24 -right-24 w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full opacity-20 blur-[100px]"
+        className="pointer-events-none absolute -bottom-24 -right-24 w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full opacity-20 blur-[100px] will-change-transform"
         style={{
           background:
             "radial-gradient(circle at 50% 50%, var(--color-violet), var(--color-lilac) 50%, var(--color-sky) 90%, transparent 100%)",
@@ -30,7 +30,7 @@ export default function AethraSection() {
             <span className="w-1.5 h-1.5 rounded-full bg-lilac" />
             Beyond freelance
           </span>
-          <h2 className="font-display font-extrabold text-[10vw] md:text-6xl leading-[0.95] tracking-tight mt-3">
+          <h2 className="font-display font-extrabold text-[clamp(2.2rem,8.5vw,3.75rem)] md:text-6xl leading-[0.95] tracking-tight mt-3">
             I run Aethra
             <br />
             <span className="bg-gradient-to-r from-cream via-lilac to-sky bg-clip-text text-transparent">

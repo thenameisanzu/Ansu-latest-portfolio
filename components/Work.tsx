@@ -44,17 +44,17 @@ export default function Work() {
   }, []);
 
   return (
-    <section id="work" ref={sectionRef} className="relative md:h-screen">
-      <div className="md:h-screen md:flex md:items-center overflow-hidden">
+    <section id="work" ref={sectionRef} className="relative md:h-screen py-16 md:py-0">
+      <div className="md:h-screen md:flex md:items-center md:overflow-hidden">
         <div
           ref={trackRef}
           className="flex flex-col md:flex-row gap-6 md:gap-6 px-6 md:px-10 md:w-max"
         >
-          <div className="md:w-[28vw] md:shrink-0 flex flex-col justify-end pb-6 md:pb-0 pt-8 md:pt-0">
+          <div className="md:w-[28vw] md:shrink-0 flex flex-col justify-end pb-6 md:pb-0 pt-4 md:pt-0">
             <span className="font-body text-sm text-ink-soft mb-3">
               Selected work
             </span>
-            <h2 className="font-display font-extrabold text-ink text-[11vw] md:text-5xl leading-[0.95] tracking-tight">
+            <h2 className="font-display font-extrabold text-ink text-[clamp(2.2rem,8.2vw,3rem)] md:text-5xl leading-[0.95] tracking-tight">
               Projects, mostly
               <br />
               through Aethra.
