@@ -26,7 +26,7 @@ export default function Magnetic({ children }: { children: ReactNode }) {
       ref={ref}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
-      className="transition-transform duration-300 ease-out inline-block"
+      className="transition-transform duration-300 ease-out inline-block max-w-full"
     >
       {children}
     </div>

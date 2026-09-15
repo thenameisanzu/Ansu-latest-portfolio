@@ -43,13 +43,13 @@ export default function Contact() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7, delay: 0.1 }}
-        className="relative z-10"
+        className="relative z-10 w-full max-w-full flex justify-center px-2"
       >
         <Magnetic>
           <a
             href={`mailto:${email}`}
             data-cursor="hover"
-            className="group block font-display font-extrabold text-ink text-[9vw] md:text-6xl tracking-tight leading-none transition-all duration-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-violet hover:via-lilac hover:to-sky"
+            className="group block font-display font-extrabold text-ink text-[clamp(1.25rem,5.6vw,3.75rem)] md:text-5xl lg:text-6xl tracking-tight leading-none transition-all duration-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-violet hover:via-lilac hover:to-sky max-w-full text-center"
           >
             {email}
           </a>
