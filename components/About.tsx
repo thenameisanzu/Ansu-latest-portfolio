@@ -20,12 +20,13 @@ export default function About() {
         >
           <div className="relative aspect-[4/5] w-full max-w-md mx-auto md:max-w-none rounded-2xl md:rounded-3xl overflow-hidden bg-ink/5 border border-ink/10 shadow-sm">
             <Image
-              src="/images/ansu.png"
+              src="/images/ansu.webp"
               alt="Ansu V S"
               fill
-              sizes="(min-width: 768px) 45vw, 100vw"
+              sizes="(min-width: 1024px) 35vw, (min-width: 768px) 45vw, 90vw"
               className="object-cover grayscale contrast-[1.05]"
-              unoptimized
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAaABMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDr1h8tdiu7AdC3Wqd1M8TFQOAOtXLx2SynngKlxGXTPTOK523a+ms5/PuhOdoKSBQrD1BA4qYtX1KnfluiY3bE52t+dFOhhh8lPNkbfjmiuj3SOVFTUNRvbaIjzd1uBghRhsUmj3IlIRkKAjKhvSq+sf8AHnJ/umnaX923/wB0U3BR2JqO9jYV5EUKHGB/sCimv99vrRV8kS7s/9k="
             />
             {/* Subtle violet tint to match pastel palette */}
             <div
