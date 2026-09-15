@@ -11,6 +11,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
 import TabTitleManager from "@/components/TabTitleManager";
+import Preloader from "@/components/Preloader";
 
 export const viewport: Viewport = {
   themeColor: "#f2eae0",
@@ -69,6 +70,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased relative">
+        <Preloader />
         <div
           aria-hidden
           className="pointer-events-none fixed inset-0 z-30 bg-noise opacity-50 mix-blend-multiply"
