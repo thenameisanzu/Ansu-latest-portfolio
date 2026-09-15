@@ -20,7 +20,7 @@ export default function About() {
         >
           <div className="relative aspect-[4/5] w-full max-w-md mx-auto md:max-w-none rounded-2xl md:rounded-3xl overflow-hidden bg-ink/5 border border-ink/10 shadow-sm">
             <Image
-              src="/images/ansu.jpg"
+              src="/images/ansu.png"
               alt="Ansu V S"
               fill
               sizes="(min-width: 768px) 40vw, 90vw"
