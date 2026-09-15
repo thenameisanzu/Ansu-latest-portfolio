@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { socials } from "@/lib/content";
+import { SocialIcon } from "@/components/SocialIcons";
 
 const links = [
   { label: "Work", href: "#work" },
@@ -37,11 +38,10 @@ export default function Nav() {
 
         <button
           onClick={() => setOpen((v) => !v)}
-          className="relative z-50 font-body text-sm font-medium text-cream flex items-center gap-2"
+          className="relative z-50 p-2.5 text-cream flex items-center justify-center rounded-full hover:bg-cream/10 transition-colors"
           data-cursor="hover"
-          aria-label="Toggle menu"
+          aria-label={open ? "Close menu" : "Open menu"}
         >
-          <span>{open ? "Close" : "Menu"}</span>
           <span className="relative w-6 h-4 flex flex-col justify-between">
             <span
               className={`block h-[1.5px] bg-cream transition-transform duration-300 ${
@@ -108,20 +108,23 @@ export default function Nav() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="relative z-10 mt-10 md:mt-14 flex flex-wrap gap-x-6 gap-y-2"
+              className="relative z-10 mt-10 md:mt-14 flex items-center gap-4"
             >
-              {socials.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target={s.label === "Email" ? undefined : "_blank"}
-                  rel="noreferrer"
-                  className="font-body text-sm text-cream/60 hover:text-lilac transition-colors"
-                  data-cursor="hover"
-                >
-                  {s.label}
-                </a>
-              ))}
+              {socials
+                .filter((s) => s.label !== "Email")
+                .map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={s.label}
+                    className="p-3 rounded-full bg-cream/5 border border-cream/15 text-cream/80 hover:text-cream hover:bg-cream/15 hover:border-cream/30 hover:scale-110 transition-all duration-300 flex items-center justify-center"
+                    data-cursor="hover"
+                  >
+                    <SocialIcon name={s.label} size={20} />
+                  </a>
+                ))}
             </motion.div>
           </motion.div>
         )}

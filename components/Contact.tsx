@@ -3,11 +3,12 @@
 import { motion } from "framer-motion";
 import Magnetic from "./Magnetic";
 import { socials, email } from "@/lib/content";
+import { SocialIcon } from "@/components/SocialIcons";
 
 const socialHoverColors: Record<string, string> = {
-  GitHub: "hover:text-violet",
-  LinkedIn: "hover:text-sky",
-  Instagram: "hover:text-lilac",
+  GitHub: "hover:text-violet hover:border-violet/40 hover:bg-violet/10",
+  LinkedIn: "hover:text-sky hover:border-sky/40 hover:bg-sky/10",
+  Instagram: "hover:text-lilac hover:border-lilac/40 hover:bg-lilac/10",
 };
 
 export default function Contact() {
@@ -59,7 +60,7 @@ export default function Contact() {
         <p className="font-body text-sm text-ink-soft">
           © {new Date().getFullYear()} Ansu V S
         </p>
-        <div className="flex gap-6">
+        <div className="flex items-center gap-3">
           {socials
             .filter((s) => s.label !== "Email")
             .map((s) => (
@@ -68,12 +69,13 @@ export default function Contact() {
                 href={s.href}
                 target="_blank"
                 rel="noreferrer"
+                aria-label={s.label}
                 data-cursor="hover"
-                className={`font-body text-sm text-ink-soft ${
+                className={`p-2.5 rounded-full border border-ink/15 text-ink/75 hover:scale-110 transition-all duration-300 flex items-center justify-center ${
                   socialHoverColors[s.label] || "hover:text-ink"
-                } transition-colors font-medium`}
+                }`}
               >
-                {s.label}
+                <SocialIcon name={s.label} size={18} />
               </a>
             ))}
         </div>
