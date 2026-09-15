@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 const lines = ["Developer.", "Designer.", "Dreamer of Aethra."];
@@ -8,6 +8,28 @@ const lines = ["Developer.", "Designer.", "Dreamer of Aethra."];
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const blobRef = useRef<HTMLDivElement>(null);
+  const [time, setTime] = useState<string>("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      try {
+        const now = new Date();
+        const formatted = new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Kolkata",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        }).format(now);
+        setTime(`${formatted} IST`);
+      } catch {
+        setTime("IST (GMT+5:30)");
+      }
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (window.matchMedia("(hover: none)").matches) return;
@@ -58,7 +80,7 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="top"
-      className="relative min-h-[100svh] flex items-end overflow-hidden px-6 md:px-10 pb-14 md:pb-16 pt-32"
+      className="relative min-h-[100svh] flex flex-col justify-center lg:justify-end overflow-hidden px-6 md:px-10 lg:px-12 pb-12 lg:pb-16 pt-24 md:pt-32"
     >
       <div
         ref={blobRef}
@@ -70,16 +92,31 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative z-10 w-full">
-        <div className="flex items-center gap-2.5 mb-4 md:mb-6">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="status-dot-pulse absolute inline-flex h-full w-full rounded-full bg-sky opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky" />
+      <div className="relative z-10 w-full my-auto lg:my-0">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-wrap items-center gap-2 md:gap-3 mb-4 md:mb-6"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink/5 border border-ink/10 backdrop-blur-xs">
+            <span className="relative flex h-2 w-2">
+              <span className="status-dot-pulse absolute inline-flex h-full w-full rounded-full bg-sky opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-sky" />
+            </span>
+            <span className="font-body text-xs md:text-sm text-ink-soft">
+              Angamāli, IN
+            </span>
+            {time && (
+              <span className="font-mono text-[11px] md:text-xs text-ink/70 pl-1 border-l border-ink/15 font-medium">
+                {time}
+              </span>
+            )}
+          </div>
+          <span className="hidden sm:inline text-xs font-body text-ink-soft/60">
+            • available for select projects
           </span>
-          <p className="font-body text-sm md:text-base text-ink-soft">
-            Angamāli, Kerala — available for select projects
-          </p>
-        </div>
+        </motion.div>
 
         <h1 className="font-display font-extrabold text-ink leading-[0.98] tracking-tight text-[clamp(2.6rem,11.2vw,7.2vw)]">
           {lines.map((line, i) => (
@@ -108,7 +145,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.7 }}
-          className="mt-8 md:mt-10 flex items-end justify-between gap-6"
+          className="mt-6 md:mt-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
         >
           <p className="font-body text-base md:text-lg text-ink-soft max-w-sm">
             I build fast, cinematic websites — and run the studio behind
@@ -123,7 +160,7 @@ export default function Hero() {
                 ?.scrollIntoView({ behavior: "smooth" });
             }}
             data-cursor="hover"
-            className="group relative hidden md:inline-flex items-center gap-2 font-body text-sm font-medium pb-1 shrink-0 text-ink"
+            className="group relative inline-flex items-center gap-2 font-body text-sm font-medium pb-1 shrink-0 text-ink w-max"
           >
             <span>See the work</span>
             <span className="block w-full h-[1.5px] bg-gradient-to-r from-violet via-lilac to-sky absolute bottom-0 left-0 transition-transform origin-left group-hover:scale-x-110" />

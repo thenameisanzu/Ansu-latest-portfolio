@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { socials } from "@/lib/content";
 import { SocialIcon } from "@/components/SocialIcons";
@@ -14,6 +14,16 @@ const links = [
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const go = (href: string) => {
     setOpen(false);
@@ -23,14 +33,22 @@ export default function Nav() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-10 py-5 md:py-7 mix-blend-difference">
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-10 py-4 md:py-5 transition-all duration-300 ${
+          scrolled && !open
+            ? "bg-cream/80 backdrop-blur-md border-b border-ink/8 shadow-[0_4px_20px_-8px_rgba(32,28,38,0.06)]"
+            : "mix-blend-difference"
+        }`}
+      >
         <a
           href="#top"
           onClick={(e) => {
             e.preventDefault();
             go("#top");
           }}
-          className="font-display font-bold text-lg tracking-tight text-cream"
+          className={`font-display font-bold text-lg tracking-tight transition-colors ${
+            scrolled && !open ? "text-ink" : "text-cream"
+          }`}
           data-cursor="hover"
         >
           Ansu V S
@@ -38,25 +56,29 @@ export default function Nav() {
 
         <button
           onClick={() => setOpen((v) => !v)}
-          className="relative z-50 p-2.5 text-cream flex items-center justify-center rounded-full hover:bg-cream/10 transition-colors"
+          className={`relative z-50 p-2.5 flex items-center justify-center rounded-full transition-colors ${
+            scrolled && !open
+              ? "text-ink hover:bg-ink/5"
+              : "text-cream hover:bg-cream/10"
+          }`}
           data-cursor="hover"
           aria-label={open ? "Close menu" : "Open menu"}
         >
           <span className="relative w-6 h-4 flex flex-col justify-between">
             <span
-              className={`block h-[1.5px] bg-cream transition-transform duration-300 ${
-                open ? "translate-y-[7px] rotate-45" : ""
-              }`}
+              className={`block h-[1.5px] transition-all duration-300 ${
+                scrolled && !open ? "bg-ink" : "bg-cream"
+              } ${open ? "translate-y-[7px] rotate-45" : ""}`}
             />
             <span
-              className={`block h-[1.5px] bg-cream transition-opacity duration-300 ${
-                open ? "opacity-0" : "opacity-100"
-              }`}
+              className={`block h-[1.5px] transition-all duration-300 ${
+                scrolled && !open ? "bg-ink" : "bg-cream"
+              } ${open ? "opacity-0" : "opacity-100"}`}
             />
             <span
-              className={`block h-[1.5px] bg-cream transition-transform duration-300 ${
-                open ? "-translate-y-[7px] -rotate-45" : ""
-              }`}
+              className={`block h-[1.5px] transition-all duration-300 ${
+                scrolled && !open ? "bg-ink" : "bg-cream"
+              } ${open ? "-translate-y-[7px] -rotate-45" : ""}`}
             />
           </span>
         </button>

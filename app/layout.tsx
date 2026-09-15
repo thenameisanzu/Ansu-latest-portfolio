@@ -24,7 +24,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className="antialiased relative">
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 z-30 bg-noise opacity-50 mix-blend-multiply"
+        />
         <CustomCursor />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
