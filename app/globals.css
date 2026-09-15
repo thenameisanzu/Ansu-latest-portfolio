@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+:root {
+  --color-cream: #f2eae0;
+  --color-sky: #b4d3d9;
+  --color-lilac: #bda6ce;
+  --color-violet: #9b8ec7;
+  --color-ink: #201c26;
+  --color-ink-soft: #4a4552;
+}
+
+@theme inline {
+  --color-cream: var(--color-cream);
+  --color-sky: var(--color-sky);
+  --color-lilac: var(--color-lilac);
+  --color-violet: var(--color-violet);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --font-display: var(--font-montserrat);
+  --font-body: var(--font-inter);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-cream);
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-violet);
+  color: var(--color-cream);
+}
+
+/* Custom cursor — desktop only */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 100;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-ink);
+}
+
+.cursor-ring {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-ink);
+  transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease,
+    background-color 0.25s ease, opacity 0.25s ease;
+}
+
+.cursor-ring.is-active {
+  width: 64px;
+  height: 64px;
+  background: var(--color-violet);
+  border-color: var(--color-violet);
+  opacity: 0.15;
+}
+
+@media (hover: none) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
+  }
+}
+
+/* Marquee */
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.marquee-track {
+  animation: marquee-left 32s linear infinite;
+}
+.marquee-track-reverse {
+  animation: marquee-right 38s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
