@@ -9,6 +9,7 @@ import FAQ from "@/components/FAQ";
 import AethraSection from "@/components/AethraSection";
 import Contact from "@/components/Contact";
 import BackToTop from "@/components/BackToTop";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 export default function Home() {
   return (
@@ -25,6 +26,7 @@ export default function Home() {
         <AethraSection />
         <Contact />
       </main>
+      <WhatsAppButton />
       <BackToTop />
     </>
   );

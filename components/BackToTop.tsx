@@ -29,7 +29,7 @@ export default function BackToTop() {
           transition={{ duration: 0.3 }}
           data-cursor="hover"
           aria-label="Back to top"
-          className="fixed bottom-20 right-6 md:bottom-24 md:right-8 z-40 w-11 h-11 md:w-12 md:h-12 rounded-full bg-cream/95 text-ink border border-ink/15 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-ink hover:text-cream hover:scale-110 transition-all duration-300"
+          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 w-11 h-11 md:w-12 md:h-12 rounded-full bg-cream/95 text-ink border border-ink/15 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-ink hover:text-cream hover:scale-110 transition-all duration-300"
         >
           <svg
             viewBox="0 0 24 24"

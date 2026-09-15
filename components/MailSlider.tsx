@@ -8,9 +8,15 @@ export default function MailSlider() {
   const [status, setStatus] = useState<"idle" | "copied" | "mailed">("idle");
   const x = useMotionValue(0);
 
-  // Dynamic opacity and colors based on drag position
-  const leftOpacity = useTransform(x, [-90, -30, 0], [1, 0.4, 0.2]);
-  const rightOpacity = useTransform(x, [0, 30, 90], [0.2, 0.4, 1]);
+  // Dynamic opacity and scales for morphing icons
+  const dualIconOpacity = useTransform(x, [-25, -12, 0, 12, 25], [0, 0.4, 1, 0.4, 0]);
+  const leftDragIconOpacity = useTransform(x, [-75, -20, 0], [1, 0.6, 0]);
+  const leftDragIconScale = useTransform(x, [-75, -20, 0], [1.15, 0.9, 0.6]);
+  const rightDragIconOpacity = useTransform(x, [0, 20, 75], [0, 0.6, 1]);
+  const rightDragIconScale = useTransform(x, [0, 20, 75], [0.6, 0.9, 1.15]);
+
+  const leftTrackFill = useTransform(x, [-95, 0], [1, 0]);
+  const rightTrackFill = useTransform(x, [0, 95], [0, 1]);
   const knobBg = useTransform(
     x,
     [-90, -40, 0, 40, 90],
@@ -54,6 +60,18 @@ export default function MailSlider() {
     <div className="flex flex-col items-center gap-3 w-full max-w-sm mx-auto select-none mt-6">
       {/* iOS Slider Bar */}
       <div className="relative w-full h-14 rounded-full bg-ink/8 border border-ink/15 backdrop-blur-md p-1.5 flex items-center justify-between overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]">
+        {/* Left Track Ambient Fill (Lilac/Violet) */}
+        <motion.div
+          style={{ opacity: leftTrackFill }}
+          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-violet/25 to-transparent rounded-l-full"
+        />
+
+        {/* Right Track Ambient Fill (Sky) */}
+        <motion.div
+          style={{ opacity: rightTrackFill }}
+          className="pointer-events-none absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-sky/35 to-transparent rounded-r-full"
+        />
+
         {/* Left Track Zone: Open Mail */}
         <button
           onClick={triggerMail}
@@ -62,10 +80,13 @@ export default function MailSlider() {
           title="Click or slide left to open mail app"
         >
           <motion.span
-            style={{ opacity: leftOpacity }}
-            className="flex items-center gap-1 text-ink font-semibold"
+            style={{
+              opacity: useTransform(x, [-90, -20, 0], [1, 0.6, 0.35]),
+              scale: useTransform(x, [-90, 0], [1.05, 1]),
+            }}
+            className="flex items-center gap-1.5 text-ink font-semibold"
           >
-            <span className="text-sm">←</span>
+            <span className="text-sm transition-transform group-hover:-translate-x-0.5">←</span>
             <span>Direct Mail</span>
           </motion.span>
         </button>
@@ -78,15 +99,18 @@ export default function MailSlider() {
           title="Click or slide right to copy address"
         >
           <motion.span
-            style={{ opacity: rightOpacity }}
-            className="flex items-center gap-1 text-ink font-semibold"
+            style={{
+              opacity: useTransform(x, [0, 20, 90], [0.35, 0.6, 1]),
+              scale: useTransform(x, [0, 90], [1, 1.05]),
+            }}
+            className="flex items-center gap-1.5 text-ink font-semibold"
           >
             <span>Copy Email</span>
-            <span className="text-sm">→</span>
+            <span className="text-sm transition-transform group-hover:translate-x-0.5">→</span>
           </motion.span>
         </button>
 
-        {/* Interactive Draggable Center Knob */}
+        {/* Interactive Draggable Center Knob with Direction-Morphing Icons */}
         <motion.div
           drag="x"
           dragConstraints={{ left: -95, right: 95 }}
@@ -94,9 +118,9 @@ export default function MailSlider() {
           dragSnapToOrigin={true}
           onDragEnd={handleDragEnd}
           style={{ x, backgroundColor: knobBg }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute left-1/2 -translate-x-1/2 z-20 w-11 h-11 rounded-full text-cream flex items-center justify-center cursor-grab active:cursor-grabbing shadow-[0_4px_14px_rgba(32,28,38,0.25)] border border-white/25"
+          className="absolute left-1/2 -translate-x-1/2 z-20 w-11 h-11 rounded-full text-cream flex items-center justify-center cursor-grab active:cursor-grabbing shadow-[0_4px_14px_rgba(32,28,38,0.25)] border border-white/25 overflow-hidden"
           data-cursor="hover"
         >
           <AnimatePresence mode="wait">
@@ -121,25 +145,81 @@ export default function MailSlider() {
                 ↗
               </motion.span>
             ) : (
-              <motion.div
-                key="idle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex items-center justify-center gap-0.5"
-              >
-                <svg
-                  className="w-4 h-4 text-cream"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+              <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
+                {/* 1. Bidirectional Idle Icon (Shown at Center) */}
+                <motion.div
+                  style={{ opacity: dualIconOpacity }}
+                  className="absolute flex items-center justify-center gap-0.5 text-cream"
                 >
-                  <path d="m9 18 6-6-6-6" />
-                </svg>
-              </motion.div>
+                  <svg
+                    className="w-3.5 h-3.5 text-cream/70"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m15 18-6-6 6-6" />
+                  </svg>
+                  <span className="w-1 h-1 rounded-full bg-cream/80" />
+                  <svg
+                    className="w-3.5 h-3.5 text-cream/70"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                </motion.div>
+
+                {/* 2. Dragging Left Icon (Morphs to Left Arrow / Mail) */}
+                <motion.div
+                  style={{
+                    opacity: leftDragIconOpacity,
+                    scale: leftDragIconScale,
+                  }}
+                  className="absolute flex items-center justify-center text-cream"
+                >
+                  <svg
+                    className="w-4 h-4 text-cream"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                </motion.div>
+
+                {/* 3. Dragging Right Icon (Morphs to Right Arrow / Copy) */}
+                <motion.div
+                  style={{
+                    opacity: rightDragIconOpacity,
+                    scale: rightDragIconScale,
+                  }}
+                  className="absolute flex items-center justify-center text-cream"
+                >
+                  <svg
+                    className="w-4 h-4 text-cream"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </motion.div>
+              </div>
             )}
           </AnimatePresence>
         </motion.div>

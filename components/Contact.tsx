@@ -11,13 +11,14 @@ const socialHoverColors: Record<string, string> = {
   GitHub: "hover:text-violet hover:border-violet/40 hover:bg-violet/10",
   LinkedIn: "hover:text-sky hover:border-sky/40 hover:bg-sky/10",
   Instagram: "hover:text-lilac hover:border-lilac/40 hover:bg-lilac/10",
+  WhatsApp: "hover:text-emerald-500 hover:border-emerald-500/40 hover:bg-emerald-500/10",
 };
 
 export default function Contact() {
   return (
     <section
       id="contact"
-      className="relative overflow-hidden px-6 md:px-10 pt-24 md:pt-36 pb-10 flex flex-col items-center text-center"
+      className="relative overflow-hidden px-6 md:px-10 pt-24 md:pt-36 pb-16 md:pb-24 flex flex-col items-center text-center"
     >
       {/* Ambient background aura */}
       <div
@@ -66,7 +67,7 @@ export default function Contact() {
         <p className="font-body text-sm text-ink-soft">
           © {new Date().getFullYear()} Ansu V S
         </p>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 sm:pr-16">
           {socials
             .filter((s) => s.label !== "Email")
             .map((s) => (

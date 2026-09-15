@@ -10,6 +10,7 @@ import "./fonts.css";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
+import TabTitleManager from "@/components/TabTitleManager";
 
 export const viewport: Viewport = {
   themeColor: "#f2eae0",
@@ -72,6 +73,7 @@ export default function RootLayout({
           aria-hidden
           className="pointer-events-none fixed inset-0 z-30 bg-noise opacity-50 mix-blend-multiply"
         />
+        <TabTitleManager />
         <CustomCursor />
         <SmoothScroll>{children}</SmoothScroll>
       </body>

@@ -105,7 +105,7 @@ export default function Hero() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-sky" />
             </span>
             <span className="font-body text-xs md:text-sm text-ink-soft">
-              Angamāli, IN
+              Kerala, India
             </span>
             {time && (
               <span className="font-mono text-[11px] md:text-xs text-ink/70 pl-1 border-l border-ink/15 font-medium">
