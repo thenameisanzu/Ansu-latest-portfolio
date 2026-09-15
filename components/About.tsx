@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import VoiceIntro from "@/components/VoiceIntro";
 
 export default function About() {
   return (
@@ -85,6 +86,10 @@ export default function About() {
               <span className="text-xs text-ink/60">↗</span>
             </a>
           </motion.div>
+
+          <div className="pt-2">
+            <VoiceIntro />
+          </div>
         </div>
       </div>
     </section>

@@ -174,5 +174,38 @@ export const socials = [
   { label: "Email", href: "mailto:ansuvs047@gmail.com" },
 ];
 
+export type FAQ = {
+  question: string;
+  answer: string;
+  category: string;
+};
+
+export const faqs: FAQ[] = [
+  {
+    category: "Timeline & Velocity",
+    question: "How fast can we launch a project?",
+    answer:
+      "Most studio projects are completed within 2 to 4 weeks using focused sprint cycles. From initial Figma design direction to production Next.js deployment and testing, we move rapidly without bloated agency overhead.",
+  },
+  {
+    category: "Scope & Deliverables",
+    question: "What is included in a typical project scope?",
+    answer:
+      "Every build is end-to-end: bespoke UI/UX in Figma, responsive frontend engineering in Next.js & TypeScript, buttery-smooth GSAP/Framer animations, headless CMS integration if required, and 99+ Lighthouse speed & SEO optimization.",
+  },
+  {
+    category: "Global Collaboration",
+    question: "Do you collaborate with international clients?",
+    answer:
+      "Yes. I work with clients and startups globally across North America, Europe, the Middle East, and India. Communication is async-first via Slack, Loom, and structured weekly video milestones to ensure seamless timezone overlap.",
+  },
+  {
+    category: "Pricing & Retainers",
+    question: "How do payments and retainers work?",
+    answer:
+      "Engagements are structured either as milestone-based fixed-price project sprints (50% upfront / 50% upon deployment) or as dedicated monthly retainers through Aethra for continuous design and engineering support.",
+  },
+];
+
 export const email = "ansuvs047@gmail.com";
 export const calLink = "mailto:ansuvs047@gmail.com?subject=Project%20Inquiry%20—%2015-Min%20Intro%20Call";
