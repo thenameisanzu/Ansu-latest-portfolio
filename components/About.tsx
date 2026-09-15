@@ -9,9 +9,9 @@ export default function About() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 lg:gap-12 items-center">
         {/* Left column / top on mobile: Photo */}
         <motion.div
-          initial={{ clipPath: "inset(0 100% 0 0)" }}
-          whileInView={{ clipPath: "inset(0 0% 0 0)" }}
-          viewport={{ once: true, margin: "-10%" }}
+          initial={{ opacity: 0, clipPath: "inset(0% 100% 0% 0%)" }}
+          whileInView={{ opacity: 1, clipPath: "inset(0% 0% 0% 0%)" }}
+          viewport={{ once: true, margin: "0px" }}
           transition={{
             duration: 0.9,
             ease: [0.76, 0, 0.24, 1],
@@ -23,9 +23,9 @@ export default function About() {
               src="/images/ansu.png"
               alt="Ansu V S"
               fill
-              sizes="(min-width: 768px) 40vw, 90vw"
+              sizes="(min-width: 768px) 45vw, 100vw"
               className="object-cover grayscale contrast-[1.05]"
-              priority={false}
+              unoptimized
             />
             {/* Subtle violet tint to match pastel palette */}
             <div
