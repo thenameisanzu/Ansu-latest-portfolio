@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Magnetic from "./Magnetic";
@@ -9,17 +9,16 @@ import { SocialIcon } from "@/components/SocialIcons";
 import MailSlider from "@/components/MailSlider";
 import PhoneSlider from "@/components/PhoneSlider";
 import {
-  ChevronLeft,
-  ChevronRight,
   Sparkles,
   Mail,
   MessageCircle,
   Copy,
   Check,
   Maximize2,
-  Play,
-  Pause,
+  ChevronLeft,
+  ChevronRight,
   X,
+  Radio,
 } from "lucide-react";
 
 // Behind The Scenes photography & studio moments
@@ -34,49 +33,53 @@ const btsPhotos = [
   },
   {
     src: "/images/IMG_20260612_215448.jpg",
-    alt: "Behind The Scenes Reel 03",
+    alt: "Behind The Scenes 03",
   },
   {
     src: "/images/IMG_20260704_083342.jpg",
-    alt: "Behind The Scenes Reel 04",
+    alt: "Behind The Scenes 04",
   },
   {
     src: "/images/IMG_20260707_212337.jpg",
-    alt: "Behind The Scenes Reel 05",
+    alt: "Behind The Scenes 05",
   },
   {
     src: "/images/IMG_20260707_214524.jpg",
-    alt: "Behind The Scenes Reel 06",
+    alt: "Behind The Scenes 06",
   },
   {
     src: "/images/IMG_20260726_101246.jpg",
-    alt: "Behind The Scenes Reel 07",
+    alt: "Behind The Scenes 07",
   },
   {
     src: "/images/IMG_20260831_143005.jpg",
-    alt: "Behind The Scenes Reel 08",
+    alt: "Behind The Scenes 08",
   },
   {
     src: "/images/IMG_20260901_095618.jpg",
-    alt: "Behind The Scenes Reel 09",
+    alt: "Behind The Scenes 09",
   },
   {
     src: "/images/IMG_20260901_213522.jpg",
-    alt: "Behind The Scenes Reel 10",
+    alt: "Behind The Scenes 10",
   },
   {
     src: "/images/IMG_20260905_212222.jpg",
-    alt: "Behind The Scenes Reel 11",
+    alt: "Behind The Scenes 11",
   },
   {
     src: "/images/IMG_20260913_233739.jpg",
-    alt: "Behind The Scenes Reel 12",
+    alt: "Behind The Scenes 12",
   },
   {
     src: "/images/IMG_20260916_124956.jpg",
-    alt: "Behind The Scenes Reel 13",
+    alt: "Behind The Scenes 13",
   },
 ];
+
+// Split into 2 alternating rows for dual marquee motion
+const row1Photos = btsPhotos.filter((_, i) => i % 2 === 0);
+const row2Photos = btsPhotos.filter((_, i) => i % 2 !== 0);
 
 const socialHoverColors: Record<string, string> = {
   GitHub: "hover:text-violet hover:border-violet/40 hover:bg-violet/10",
@@ -85,106 +88,51 @@ const socialHoverColors: Record<string, string> = {
   WhatsApp: "hover:text-emerald-500 hover:border-emerald-500/40 hover:bg-emerald-500/10",
 };
 
-// Smooth slide animation variants
-const slideVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 60 : -60,
-    opacity: 0,
-    scale: 0.98,
-  }),
-  center: {
-    zIndex: 1,
-    x: 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      x: { type: "spring" as const, stiffness: 320, damping: 32 },
-      opacity: { duration: 0.3 },
-      scale: { duration: 0.3 },
-    },
-  },
-  exit: (direction: number) => ({
-    zIndex: 0,
-    x: direction < 0 ? 60 : -60,
-    opacity: 0,
-    scale: 0.98,
-    transition: {
-      x: { type: "spring" as const, stiffness: 320, damping: 32 },
-      opacity: { duration: 0.25 },
-      scale: { duration: 0.25 },
-    },
-  }),
-};
-
 export default function Contact() {
   // Channel Tab State (0: Email, 1: WhatsApp / Phone)
   const [activeTab, setActiveTab] = useState<"email" | "whatsapp">("email");
   const [copied, setCopied] = useState(false);
 
-  // Cinematic Slider State
-  const [[page, direction], setPage] = useState([0, 0]);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  // Fullscreen Lightbox State
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  const totalPhotos = btsPhotos.length;
-  // Normalized active index
-  const activeIndex = ((page % totalPhotos) + totalPhotos) % totalPhotos;
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+  };
 
-  const thumbnailContainerRef = useRef<HTMLDivElement>(null);
-  const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const closeLightbox = () => {
+    setLightboxIndex(null);
+  };
 
-  const paginate = useCallback(
-    (newDirection: number) => {
-      setPage(([prevPage]) => [prevPage + newDirection, newDirection]);
-    },
-    []
-  );
+  const prevLightbox = () => {
+    if (lightboxIndex === null) return;
+    setLightboxIndex((prev) =>
+      prev === null ? 0 : (prev - 1 + btsPhotos.length) % btsPhotos.length
+    );
+  };
 
-  const setSlide = useCallback(
-    (targetIndex: number) => {
-      const currentNorm = ((page % totalPhotos) + totalPhotos) % totalPhotos;
-      const diff = targetIndex - currentNorm;
-      setPage([page + diff, diff >= 0 ? 1 : -1]);
-    },
-    [page, totalPhotos]
-  );
+  const nextLightbox = () => {
+    if (lightboxIndex === null) return;
+    setLightboxIndex((prev) =>
+      prev === null ? 0 : (prev + 1) % btsPhotos.length
+    );
+  };
 
-  // Auto-scroll active thumbnail into view
+  // Lightbox keyboard navigation
   useEffect(() => {
-    const el = thumbnailRefs.current[activeIndex];
-    if (el && thumbnailContainerRef.current) {
-      el.scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "nearest",
-      });
-    }
-  }, [activeIndex]);
-
-  // Gentle autoplay timer (5 seconds)
-  useEffect(() => {
-    if (!isPlaying || isHovered || isLightboxOpen) return;
-    const timer = setInterval(() => {
-      paginate(1);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [isPlaying, isHovered, isLightboxOpen, paginate]);
-
-  // Keyboard navigation when lightbox is open or stage is focused
-  useEffect(() => {
+    if (lightboxIndex === null) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") paginate(1);
-      if (e.key === "ArrowLeft") paginate(-1);
-      if (e.key === "Escape" && isLightboxOpen) setIsLightboxOpen(false);
+      if (e.key === "ArrowRight") nextLightbox();
+      if (e.key === "ArrowLeft") prevLightbox();
+      if (e.key === "Escape") closeLightbox();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [paginate, isLightboxOpen]);
+  }, [lightboxIndex]);
 
   // Lock body scroll when lightbox is active
   useEffect(() => {
-    if (isLightboxOpen) {
+    if (lightboxIndex !== null) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -192,7 +140,7 @@ export default function Contact() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isLightboxOpen]);
+  }, [lightboxIndex]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -421,18 +369,16 @@ export default function Contact() {
             </div>
           </motion.div>
 
-          {/* Right Column: Cinematic Interactive Stage with Touch-Drag Swipe & Thumbnail Dock */}
+          {/* Right Column: Automatic Dual-Track Marquee Slideshow */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
             className="lg:col-span-6 relative flex flex-col justify-between rounded-3xl overflow-hidden bg-cream/90 md:bg-cream/70 border border-ink/[0.09] shadow-[0_8px_28px_rgba(32,28,38,0.03)] backdrop-blur-xl p-5 sm:p-6 md:p-7 min-h-[460px] sm:min-h-[500px]"
           >
-            {/* Top Bar: Header Badge, Slide Counter & Controls */}
-            <div className="flex items-center justify-between gap-3 pb-3.5 border-b border-ink/8">
+            {/* Top Bar: Header Badge & Live Status */}
+            <div className="flex items-center justify-between gap-3 pb-3.5 border-b border-ink/8 relative z-20">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink/5 border border-ink/10">
                 <Sparkles className="w-3.5 h-3.5 text-violet" />
                 <span className="font-mono text-xs font-semibold uppercase tracking-wider text-ink">
@@ -441,193 +387,112 @@ export default function Contact() {
               </div>
 
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  data-cursor="hover"
-                  title={isPlaying ? "Pause auto-advance" : "Play auto-advance"}
-                  className="p-1.5 rounded-full bg-ink/5 hover:bg-ink/10 border border-ink/8 text-ink/70 hover:text-ink transition-all cursor-pointer"
-                >
-                  {isPlaying ? (
-                    <Pause className="w-3 h-3" />
-                  ) : (
-                    <Play className="w-3 h-3 translate-x-[0.5px]" />
-                  )}
-                </button>
-
-                <span className="font-mono text-xs text-ink font-semibold bg-ink/5 px-2.5 py-1 rounded-full border border-ink/10">
-                  {String(activeIndex + 1).padStart(2, "0")} / {String(totalPhotos).padStart(2, "0")}
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-violet" />
+                </span>
+                <span className="font-mono text-xs text-ink-soft/80 font-medium">
+                  Auto Reel • {btsPhotos.length} Moments
                 </span>
               </div>
             </div>
 
-            {/* Main Interactive Stage with Touch-Drag Gesture */}
-            <div className="relative my-auto py-2 w-full">
-              <div className="group relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10] min-h-[260px] sm:min-h-[290px] rounded-2xl sm:rounded-3xl overflow-hidden bg-ink/5 border border-ink/10 shadow-sm cursor-grab active:cursor-grabbing">
-                {/* Autoplay Progress Line */}
-                {isPlaying && !isHovered && (
-                  <motion.div
-                    key={page}
-                    initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 5, ease: "linear" }}
-                    className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-violet to-lilac z-30 opacity-90"
-                  />
-                )}
-
-                {/* Draggable & Swipeable Image Viewport */}
-                <AnimatePresence initial={false} custom={direction} mode="popLayout">
-                  <motion.div
-                    key={page}
-                    custom={direction}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    drag="x"
-                    dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={0.2}
-                    onDragEnd={(_, { offset, velocity }) => {
-                      const swipe = Math.abs(offset.x) * velocity.x;
-                      if (swipe < -8000 || offset.x < -60) {
-                        paginate(1);
-                      } else if (swipe > 8000 || offset.x > 60) {
-                        paginate(-1);
-                      }
-                    }}
-                    onClick={() => setIsLightboxOpen(true)}
-                    className="absolute inset-0 w-full h-full select-none"
-                  >
-                    <Image
-                      src={btsPhotos[activeIndex].src}
-                      alt={btsPhotos[activeIndex].alt}
-                      fill
-                      sizes="(min-width: 1024px) 50vw, 90vw"
-                      className="object-cover pointer-events-none transition-transform duration-700 group-hover:scale-105"
-                      priority={activeIndex === 0}
-                    />
-
-                    {/* Subtle aesthetic gradient vignette */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-ink/30 via-transparent to-transparent pointer-events-none" />
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Floating Lightbox Trigger Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsLightboxOpen(true);
-                  }}
-                  data-cursor="hover"
-                  title="Expand to Fullscreen"
-                  className="absolute top-3 right-3 z-20 p-2 rounded-xl bg-ink/40 hover:bg-ink/70 text-cream backdrop-blur-md border border-white/20 transition-all opacity-0 group-hover:opacity-100 sm:opacity-90 cursor-pointer shadow-md"
-                >
-                  <Maximize2 className="w-3.5 h-3.5" />
-                </button>
-
-                {/* Floating Desktop Prev/Next Buttons */}
-                <div className="hidden sm:flex items-center justify-between absolute inset-x-3 top-1/2 -translate-y-1/2 z-20 pointer-events-none">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      paginate(-1);
-                    }}
-                    data-cursor="hover"
-                    aria-label="Previous photo"
-                    className="pointer-events-auto p-2 rounded-full bg-cream/80 hover:bg-cream text-ink border border-ink/10 shadow-lg backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 cursor-pointer"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      paginate(1);
-                    }}
-                    data-cursor="hover"
-                    aria-label="Next photo"
-                    className="pointer-events-auto p-2 rounded-full bg-cream/80 hover:bg-cream text-ink border border-ink/10 shadow-lg backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 cursor-pointer"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+            {/* Middle: Continuous Dual-Track Marquee Showcase */}
+            <div className="group relative my-auto py-3 w-full flex flex-col gap-3.5 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
+              {/* Row 1: Flowing Left */}
+              <div className="flex overflow-hidden group-hover:[animation-play-state:paused]">
+                <div className="animate-marquee-track flex gap-3.5 shrink-0 group-hover:[animation-play-state:paused]">
+                  {row1Photos.concat(row1Photos).map((photo, i) => {
+                    const originalIndex = btsPhotos.findIndex((p) => p.src === photo.src);
+                    return (
+                      <button
+                        key={`r1_${photo.src}_${i}`}
+                        type="button"
+                        onClick={() => openLightbox(originalIndex >= 0 ? originalIndex : 0)}
+                        data-cursor="hover"
+                        aria-label="View photo"
+                        className="group/card relative w-44 sm:w-52 h-28 sm:h-32 rounded-2xl overflow-hidden bg-ink/5 border border-ink/10 shrink-0 shadow-sm transition-all duration-300 hover:scale-105 hover:border-violet/40 hover:shadow-lg cursor-pointer"
+                      >
+                        <Image
+                          src={photo.src}
+                          alt={photo.alt}
+                          fill
+                          sizes="(max-width: 768px) 180px, 220px"
+                          className="object-cover transition-transform duration-500 group-hover/card:scale-110"
+                        />
+                        {/* Hover Overlay Icon */}
+                        <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center">
+                          <div className="p-2 rounded-full bg-cream/90 text-ink shadow-md backdrop-blur-md">
+                            <Maximize2 className="w-3.5 h-3.5" />
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
+              </div>
 
-                {/* Mobile Touch Swipe Hint Pill */}
-                <div className="sm:hidden absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 px-2.5 py-0.5 rounded-full bg-ink/60 backdrop-blur-md text-[10px] text-cream/90 font-body pointer-events-none">
-                  Swipe or tap to expand
+              {/* Row 2: Flowing Right */}
+              <div className="flex overflow-hidden group-hover:[animation-play-state:paused]">
+                <div className="animate-marquee-track-reverse flex gap-3.5 shrink-0 group-hover:[animation-play-state:paused]">
+                  {row2Photos.concat(row2Photos).map((photo, i) => {
+                    const originalIndex = btsPhotos.findIndex((p) => p.src === photo.src);
+                    return (
+                      <button
+                        key={`r2_${photo.src}_${i}`}
+                        type="button"
+                        onClick={() => openLightbox(originalIndex >= 0 ? originalIndex : 0)}
+                        data-cursor="hover"
+                        aria-label="View photo"
+                        className="group/card relative w-44 sm:w-52 h-28 sm:h-32 rounded-2xl overflow-hidden bg-ink/5 border border-ink/10 shrink-0 shadow-sm transition-all duration-300 hover:scale-105 hover:border-violet/40 hover:shadow-lg cursor-pointer"
+                      >
+                        <Image
+                          src={photo.src}
+                          alt={photo.alt}
+                          fill
+                          sizes="(max-width: 768px) 180px, 220px"
+                          className="object-cover transition-transform duration-500 group-hover/card:scale-110"
+                        />
+                        {/* Hover Overlay Icon */}
+                        <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center">
+                          <div className="p-2 rounded-full bg-cream/90 text-ink shadow-md backdrop-blur-md">
+                            <Maximize2 className="w-3.5 h-3.5" />
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
 
-            {/* Bottom Interactive Thumbnail Dock & Navigation Filmstrip */}
-            <div className="pt-3 border-t border-ink/8 flex flex-col gap-2.5">
-              <div
-                ref={thumbnailContainerRef}
-                className="flex items-center gap-2 overflow-x-auto py-1 px-0.5 no-scrollbar scroll-smooth"
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            {/* Bottom Bar: Interactive Action & Hint */}
+            <div className="pt-3 border-t border-ink/8 flex items-center justify-between text-xs text-ink-soft/75 relative z-20">
+              <span className="font-body text-[11px] sm:text-xs">
+                Hover to pause • Click any photo to expand
+              </span>
+              <button
+                type="button"
+                onClick={() => openLightbox(0)}
+                data-cursor="hover"
+                className="font-body text-[11px] font-medium text-ink hover:text-violet transition-colors cursor-pointer inline-flex items-center gap-1"
               >
-                {btsPhotos.map((photo, i) => {
-                  const isActive = activeIndex === i;
-                  return (
-                    <button
-                      key={photo.src + i}
-                      ref={(el) => {
-                        thumbnailRefs.current[i] = el;
-                      }}
-                      type="button"
-                      onClick={() => setSlide(i)}
-                      onMouseEnter={() => setSlide(i)}
-                      data-cursor="hover"
-                      aria-label={`View photo ${i + 1}`}
-                      className={`relative shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden transition-all duration-300 cursor-pointer ${
-                        isActive
-                          ? "border-2 border-ink ring-2 ring-violet/50 scale-105 opacity-100 shadow-md"
-                          : "border border-ink/15 opacity-50 hover:opacity-90 hover:scale-105"
-                      }`}
-                    >
-                      <Image
-                        src={photo.src}
-                        alt={photo.alt}
-                        fill
-                        sizes="48px"
-                        className="object-cover pointer-events-none"
-                      />
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Bottom Quick Indicator */}
-              <div className="flex items-center justify-between text-xs text-ink-soft/70">
-                <span className="font-body text-[11px] sm:text-xs">
-                  Swipe or click thumbnails to browse
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setIsLightboxOpen(true)}
-                  data-cursor="hover"
-                  className="font-body text-[11px] font-medium text-ink hover:text-violet transition-colors cursor-pointer inline-flex items-center gap-1"
-                >
-                  <Maximize2 className="w-3 h-3" />
-                  <span>Fullscreen</span>
-                </button>
-              </div>
+                <Maximize2 className="w-3 h-3" />
+                <span>Gallery View</span>
+              </button>
             </div>
           </motion.div>
         </div>
 
         {/* Immersive Fullscreen Lightbox Modal */}
         <AnimatePresence>
-          {isLightboxOpen && (
+          {lightboxIndex !== null && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              onClick={() => setIsLightboxOpen(false)}
+              onClick={closeLightbox}
               className="fixed inset-0 z-50 flex flex-col items-center justify-between p-4 sm:p-8 bg-ink/95 backdrop-blur-2xl text-cream"
             >
               {/* Lightbox Top Bar */}
@@ -644,12 +509,12 @@ export default function Contact() {
 
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-xs text-cream/80 bg-cream/10 px-3 py-1.5 rounded-full border border-cream/15">
-                    {String(activeIndex + 1).padStart(2, "0")} / {String(totalPhotos).padStart(2, "0")}
+                    {String(lightboxIndex + 1).padStart(2, "0")} / {String(btsPhotos.length).padStart(2, "0")}
                   </span>
 
                   <button
                     type="button"
-                    onClick={() => setIsLightboxOpen(false)}
+                    onClick={closeLightbox}
                     data-cursor="hover"
                     aria-label="Close Lightbox"
                     className="p-2.5 rounded-full bg-cream/15 hover:bg-cream/30 text-cream border border-cream/20 transition-all cursor-pointer"
@@ -664,30 +529,18 @@ export default function Contact() {
                 className="relative my-auto w-full max-w-5xl h-[70vh] sm:h-[75vh] flex items-center justify-center"
                 onClick={(e) => e.stopPropagation()}
               >
-                <AnimatePresence initial={false} custom={direction} mode="popLayout">
+                <AnimatePresence mode="wait">
                   <motion.div
-                    key={page}
-                    custom={direction}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    drag="x"
-                    dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={0.2}
-                    onDragEnd={(_, { offset, velocity }) => {
-                      const swipe = Math.abs(offset.x) * velocity.x;
-                      if (swipe < -8000 || offset.x < -60) {
-                        paginate(1);
-                      } else if (swipe > 8000 || offset.x > 60) {
-                        paginate(-1);
-                      }
-                    }}
-                    className="relative w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-white/10 select-none cursor-grab active:cursor-grabbing"
+                    key={lightboxIndex}
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.02 }}
+                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                    className="relative w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-white/10 select-none flex items-center justify-center"
                   >
                     <Image
-                      src={btsPhotos[activeIndex].src}
-                      alt={btsPhotos[activeIndex].alt}
+                      src={btsPhotos[lightboxIndex].src}
+                      alt={btsPhotos[lightboxIndex].alt}
                       fill
                       sizes="95vw"
                       className="object-contain pointer-events-none"
@@ -696,10 +549,10 @@ export default function Contact() {
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Lightbox Side Arrows */}
+                {/* Lightbox Side Navigation Arrows */}
                 <button
                   type="button"
-                  onClick={() => paginate(-1)}
+                  onClick={prevLightbox}
                   data-cursor="hover"
                   aria-label="Previous image"
                   className="absolute left-2 sm:-left-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-cream/15 hover:bg-cream/30 text-cream border border-cream/20 backdrop-blur-xl transition-all duration-200 hover:scale-110 cursor-pointer shadow-lg"
@@ -709,7 +562,7 @@ export default function Contact() {
 
                 <button
                   type="button"
-                  onClick={() => paginate(1)}
+                  onClick={nextLightbox}
                   data-cursor="hover"
                   aria-label="Next image"
                   className="absolute right-2 sm:-right-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-cream/15 hover:bg-cream/30 text-cream border border-cream/20 backdrop-blur-xl transition-all duration-200 hover:scale-110 cursor-pointer shadow-lg"
@@ -725,12 +578,12 @@ export default function Contact() {
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
                 {btsPhotos.map((photo, i) => {
-                  const isActive = activeIndex === i;
+                  const isActive = lightboxIndex === i;
                   return (
                     <button
                       key={photo.src + "_lightbox_" + i}
                       type="button"
-                      onClick={() => setSlide(i)}
+                      onClick={() => setLightboxIndex(i)}
                       data-cursor="hover"
                       className={`relative shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden transition-all duration-300 cursor-pointer ${
                         isActive
