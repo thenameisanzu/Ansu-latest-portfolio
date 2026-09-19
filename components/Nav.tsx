@@ -8,7 +8,6 @@ import { SocialIcon } from "@/components/SocialIcons";
 const links = [
   { label: "Services", href: "#services" },
   { label: "Work", href: "#work" },
-  { label: "Captures", href: "#behind-the-scenes" },
   { label: "Skills", href: "#skills" },
   { label: "FAQ", href: "#faq" },
   { label: "Aethra", href: "#aethra" },
