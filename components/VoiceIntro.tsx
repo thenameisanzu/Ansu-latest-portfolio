@@ -5,100 +5,81 @@ import { motion } from "framer-motion";
 
 export default function VoiceIntro() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const duration = 15; // 15 seconds intro
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const introText =
-    "Hey there! I'm Ansu. I design and build fast, cinematic web products and run Aethra studio. Let's create something memorable together.";
-
-  const stopAudio = () => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    setIsPlaying(false);
-  };
-
-  const playSynthesizedVoice = () => {
-    if (typeof window === "undefined") return;
-
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(introText);
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
-
-      // Try to find a natural English voice
-      const voices = window.speechSynthesis.getVoices();
-      const naturalVoice = voices.find(
-        (v) =>
-          (v.name.includes("Natural") ||
-            v.name.includes("Samantha") ||
-            v.name.includes("Daniel") ||
-            v.name.includes("Google UK English Male") ||
-            v.lang.startsWith("en")) &&
-          !v.name.includes("Albert")
-      );
-      if (naturalVoice) utterance.voice = naturalVoice;
-
-      utterance.onstart = () => {
-        setIsPlaying(true);
-      };
-
-      utterance.onend = () => {
-        stopAudio();
-        setProgress(100);
-        setTimeout(() => setProgress(0), 1200);
-      };
-
-      utterance.onerror = () => {
-        stopAudio();
-      };
-
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setIsPlaying(true);
-    }
-
-    // Progress counter animation
-    const startTime = Date.now();
-    const totalMs = duration * 1000;
-    if (intervalRef.current) clearInterval(intervalRef.current);
-
-    intervalRef.current = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const pct = Math.min(100, (elapsed / totalMs) * 100);
-      setProgress(pct);
-      if (elapsed >= totalMs) {
-        stopAudio();
-      }
-    }, 100);
-  };
-
-  const togglePlay = () => {
-    if (isPlaying) {
-      stopAudio();
-    } else {
-      setProgress(0);
-      playSynthesizedVoice();
-    }
-  };
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(12);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      if (typeof window !== "undefined" && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
+    const audio = new Audio("/audio/voice-note.m4a");
+    audioRef.current = audio;
+
+    const handleLoadedMetadata = () => {
+      if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+        setDuration(audio.duration);
       }
+    };
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+
+    const handlePause = () => {
+      setIsPlaying(false);
+    };
+
+    const handlePlay = () => {
+      setIsPlaying(true);
+    };
+
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("pause", handlePause);
+    audio.addEventListener("play", handlePlay);
+
+    return () => {
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("pause", handlePause);
+      audio.removeEventListener("play", handlePlay);
+      audio.pause();
+      audio.src = "";
     };
   }, []);
 
-  const formatTime = (pct: number) => {
-    const currentSec = Math.floor((pct / 100) * duration);
-    return `0:${currentSec.toString().padStart(2, "0")}`;
+  const togglePlay = () => {
+    if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+      navigator.vibrate(25);
+    }
+
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => {
+          console.warn("Audio playback failed, attempting fallback:", err);
+          // Fallback to Kottayam 2.m4a if needed
+          if (audioRef.current) {
+            audioRef.current.src = "/audio/Kottayam%202.m4a";
+            audioRef.current.play().catch((e) => console.error(e));
+          }
+        });
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const sec = Math.floor(seconds);
+    return `0:${sec.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -108,7 +89,7 @@ export default function VoiceIntro() {
         <button
           onClick={togglePlay}
           data-cursor="hover"
-          aria-label={isPlaying ? "Pause voice intro" : "Play 15-second voice intro"}
+          aria-label={isPlaying ? "Pause voice note" : "Play Ansu's voice note"}
           className="relative w-9 h-9 rounded-full bg-ink text-cream hover:bg-violet transition-colors flex items-center justify-center shrink-0 shadow-sm group"
         >
           {isPlaying ? (
@@ -129,21 +110,25 @@ export default function VoiceIntro() {
         {/* Info & Title */}
         <div className="flex flex-col min-w-0 pr-2">
           <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-violet animate-pulse" />
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                isPlaying ? "bg-[#25D366] animate-ping" : "bg-violet animate-pulse"
+              }`}
+            />
             <span className="font-display font-bold text-xs text-ink tracking-tight">
               Ansu&apos;s Voice Note
             </span>
             <span className="font-mono text-[10px] text-ink-soft bg-ink/5 px-1.5 py-0.5 rounded">
-              15s
+              {Math.round(duration)}s
             </span>
           </div>
           <span className="font-body text-[11px] text-ink-soft truncate">
-            {isPlaying ? "Playing intro..." : "Click to hear a quick hello"}
+            {isPlaying ? "Playing voice note..." : "Click to hear my voice note"}
           </span>
         </div>
       </div>
 
-      {/* Waveform Equalizer & Progress Bar */}
+      {/* Waveform Equalizer & Dynamic Progress */}
       <div className="flex items-center gap-3 px-2 sm:px-3 py-1 sm:py-0 border-t sm:border-t-0 sm:border-l border-ink/10">
         <div className="flex items-center gap-1 h-5">
           {[0.4, 0.9, 0.6, 1.0, 0.7, 0.5, 0.85, 0.35, 0.75, 0.95, 0.5, 0.3].map(
@@ -181,7 +166,7 @@ export default function VoiceIntro() {
         </div>
 
         <span className="font-mono text-[11px] font-medium text-ink-soft w-8 text-right tabular-nums">
-          {isPlaying ? formatTime(progress) : "0:15"}
+          {isPlaying ? formatTime(currentTime) : formatTime(duration)}
         </span>
       </div>
     </div>
