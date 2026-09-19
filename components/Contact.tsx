@@ -49,65 +49,66 @@ export default function Contact() {
         transition={{ duration: 0.7, delay: 0.1 }}
         className="relative z-10 w-full max-w-4xl flex flex-col items-center px-2"
       >
-        {/* Contact Headlines: Email & Phone / WhatsApp */}
-        <div className="flex flex-col items-center gap-3 md:gap-4 mb-2">
-          <Magnetic>
-            <a
-              href={`mailto:${email}?subject=Project%20Inquiry%20—%20Ansu%20V%20S`}
-              data-cursor="hover"
-              className="group inline-block font-display font-extrabold text-ink text-[clamp(1.5rem,5.2vw,3.75rem)] md:text-5xl lg:text-6xl tracking-tight leading-[1.18] py-1 px-2 transition-all duration-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-violet hover:via-lilac hover:to-sky max-w-full text-center"
-              title="Click or slide below to email"
-            >
-              {email}
-            </a>
-          </Magnetic>
+        <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-ink mb-8">
+          Let’s start a conversation
+        </h2>
 
-          {/* Highlighted Direct Call & WhatsApp Badge */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5">
-            <Magnetic>
-              <a
-                href={whatsappLink}
-                target="_blank"
-                rel="noreferrer"
-                data-cursor="hover"
-                className="group inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cream/90 border border-ink/15 hover:border-[#25D366]/60 hover:bg-[#25D366]/10 shadow-xs hover:shadow-[0_4px_16px_rgba(37,211,102,0.2)] transition-all duration-300"
-                title="Chat on WhatsApp"
-              >
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#25D366]" />
-                </span>
-                <span className="font-display font-bold text-sm md:text-base text-ink group-hover:text-[#128C7E] transition-colors">
-                  WhatsApp: {formattedPhoneNumber}
-                </span>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#25D366]/20 text-[#128C7E] group-hover:bg-[#25D366] group-hover:text-white transition-colors">
-                  Instant Reply
-                </span>
-              </a>
-            </Magnetic>
+        {/* Grouped Contact Channels Grid */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          {/* 1. Email Group */}
+          <div className="flex flex-col items-center justify-between p-6 sm:p-8 rounded-3xl bg-ink/[0.03] border border-ink/10 backdrop-blur-md hover:border-violet/30 hover:shadow-[0_12px_32px_rgba(155,142,199,0.12)] transition-all duration-300">
+            <div className="flex flex-col items-center gap-2 mb-4">
+              <span className="inline-flex items-center gap-1.5 text-xs font-body font-semibold text-violet bg-violet/10 px-3 py-1 rounded-full">
+                <span>✉</span>
+                <span>Direct Mail</span>
+              </span>
+              <Magnetic>
+                <a
+                  href={`mailto:${email}?subject=Project%20Inquiry%20—%20Ansu%20V%20S`}
+                  data-cursor="hover"
+                  className="font-display font-extrabold text-ink text-xl sm:text-2xl lg:text-[1.7rem] tracking-tight hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-violet hover:to-sky transition-all duration-300 break-all py-1"
+                  title="Click to email"
+                >
+                  {email}
+                </a>
+              </Magnetic>
+            </div>
 
-            <Magnetic>
-              <a
-                href={`tel:${phoneNumber}`}
-                data-cursor="hover"
-                className="group inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cream/90 border border-ink/15 hover:border-indigo-500/50 hover:bg-indigo-50 shadow-xs hover:shadow-[0_4px_16px_rgba(99,102,241,0.2)] transition-all duration-300"
-                title="Call Directly"
-              >
-                <span className="text-indigo-600 group-hover:scale-110 transition-transform">
-                  📞
-                </span>
-                <span className="font-display font-bold text-sm md:text-base text-ink group-hover:text-indigo-600 transition-colors">
-                  Direct Call
-                </span>
-              </a>
-            </Magnetic>
+            {/* Slider for Email (Direct Mail / Copy) */}
+            <div className="w-full">
+              <MailSlider />
+            </div>
           </div>
-        </div>
 
-        {/* Dual Interactive Sliders (Email + WhatsApp / Direct Call) */}
-        <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 mt-4">
-          <MailSlider />
-          <PhoneSlider />
+          {/* 2. Contact Number Group (WhatsApp / Direct Call) */}
+          <div className="flex flex-col items-center justify-between p-6 sm:p-8 rounded-3xl bg-ink/[0.03] border border-ink/10 backdrop-blur-md hover:border-[#25D366]/30 hover:shadow-[0_12px_32px_rgba(37,211,102,0.12)] transition-all duration-300">
+            <div className="flex flex-col items-center gap-2 mb-4">
+              <span className="inline-flex items-center gap-1.5 text-xs font-body font-semibold text-[#128C7E] bg-[#25D366]/10 px-3 py-1 rounded-full">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#25D366]" />
+                </span>
+                <span>WhatsApp & Direct Call</span>
+              </span>
+              <Magnetic>
+                <a
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  data-cursor="hover"
+                  className="font-display font-extrabold text-ink text-xl sm:text-2xl lg:text-[1.7rem] tracking-tight hover:text-[#128C7E] transition-colors py-1"
+                  title="Click to chat on WhatsApp"
+                >
+                  {formattedPhoneNumber}
+                </a>
+              </Magnetic>
+            </div>
+
+            {/* Slider for Phone Number (Direct Call / WhatsApp) */}
+            <div className="w-full">
+              <PhoneSlider />
+            </div>
+          </div>
         </div>
       </motion.div>
 
