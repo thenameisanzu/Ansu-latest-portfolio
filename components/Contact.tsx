@@ -11,36 +11,30 @@ import PhoneSlider from "@/components/PhoneSlider";
 import { ChevronLeft, ChevronRight, Sparkles, Mail, MessageCircle, Copy, Check, ArrowUpRight } from "lucide-react";
 
 // Curated Behind The Scenes placeholder items
-const btsSlides = [
+const btsPhotos = [
   {
     src: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
-    title: "Code Architecture & Next.js",
-    tag: "Engineering",
-    caption: "Late-night full-stack architecture, clean component trees, and high-performance serverless endpoints.",
+    alt: "Code Architecture & Next.js",
   },
   {
     src: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?q=80&w=1200&auto=format&fit=crop",
-    title: "UI/UX & Design Systems",
-    tag: "Figma Direction",
-    caption: "Translating brand identities into responsive design tokens and high-fidelity prototypes.",
+    alt: "UI/UX & Design Systems",
   },
   {
     src: "https://images.unsplash.com/photo-1593062096033-9a26b09da705?q=80&w=1200&auto=format&fit=crop",
-    title: "Minimal Studio Desk",
-    tag: "Workspace",
-    caption: "Curated dual-monitor workstation designed for deep focus and precision web craftsmanship.",
+    alt: "Minimal Studio Desk",
   },
   {
     src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop",
-    title: "Late Night Sprints",
-    tag: "Production",
-    caption: "Fine-tuning WebGL shaders, GSAP scroll sequences, and 60fps micro-animations.",
+    alt: "Late Night Engineering",
   },
   {
     src: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1200&auto=format&fit=crop",
-    title: "Information Architecture",
-    tag: "Wireframing",
-    caption: "Mapping user journeys, conversion funnels, and content hierarchies before writing a single line of code.",
+    alt: "Information Architecture",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1200&auto=format&fit=crop",
+    alt: "WebGL Shaders & Performance",
   },
 ];
 
@@ -56,27 +50,19 @@ export default function Contact() {
   const [activeTab, setActiveTab] = useState<"email" | "whatsapp">("email");
   const [copied, setCopied] = useState(false);
 
-  // Slideshow State
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const slideCount = btsSlides.length;
+  // Vertical Thumbnail Slider State
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const totalPhotos = btsPhotos.length;
 
-  // Auto-play slideshow timer
+  // Gentle auto-play (swaps photo every 5 seconds when not hovered)
   useEffect(() => {
-    if (isPaused) return;
+    if (isHovered) return;
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slideCount);
-    }, 4500);
+      setActivePhotoIndex((prev) => (prev + 1) % totalPhotos);
+    }, 5000);
     return () => clearInterval(interval);
-  }, [isPaused, slideCount]);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slideCount);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slideCount) % slideCount);
-  };
+  }, [isHovered, totalPhotos]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -305,116 +291,105 @@ export default function Contact() {
             </div>
           </motion.div>
 
-          {/* Right Column: Behind The Scenes Slideshow Carousel */}
+          {/* Right Column: 21st.dev Style Vertical Thumbnail Slider (Without Captions) */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            className="lg:col-span-6 relative flex flex-col justify-between rounded-3xl overflow-hidden bg-ink text-cream border border-ink/10 shadow-[0_12px_40px_rgba(32,28,38,0.15)] min-h-[440px] sm:min-h-[480px] p-6 sm:p-8"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="lg:col-span-6 relative flex flex-col justify-between rounded-3xl overflow-hidden bg-cream/90 md:bg-cream/70 border border-ink/[0.09] shadow-[0_8px_28px_rgba(32,28,38,0.03)] backdrop-blur-xl p-5 sm:p-6 md:p-7 min-h-[440px] sm:min-h-[480px]"
           >
-            {/* Background Image Slideshow with Crossfade */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentSlide}
-                initial={{ opacity: 0, scale: 1.05 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute inset-0 z-0"
-              >
-                <Image
-                  src={btsSlides[currentSlide].src}
-                  alt={btsSlides[currentSlide].title}
-                  fill
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="object-cover opacity-45"
-                  priority={currentSlide === 0}
-                />
-                {/* Gradient Overlays for Readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/30" />
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Top Carousel Bar */}
-            <div className="relative z-10 flex items-center justify-between gap-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cream/15 border border-cream/20 backdrop-blur-md">
-                <Sparkles className="w-3.5 h-3.5 text-[#86efac]" />
-                <span className="font-mono text-xs font-semibold uppercase tracking-wider text-cream">
+            {/* Top Bar: Header Badge & Slide Counter */}
+            <div className="flex items-center justify-between gap-3 pb-4 border-b border-ink/8">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink/5 border border-ink/10">
+                <Sparkles className="w-3.5 h-3.5 text-violet" />
+                <span className="font-mono text-xs font-semibold uppercase tracking-wider text-ink">
                   Behind The Scenes
                 </span>
               </div>
 
-              <span className="font-mono text-xs text-cream/75 font-semibold bg-ink/50 px-2.5 py-1 rounded-full backdrop-blur-md border border-white/10">
-                0{currentSlide + 1} / 0{slideCount}
+              <span className="font-mono text-xs text-ink-soft/80 font-semibold bg-ink/5 px-2.5 py-1 rounded-full border border-ink/10">
+                0{activePhotoIndex + 1} / 0{totalPhotos}
               </span>
             </div>
 
-            {/* Bottom Caption & Carousel Navigation */}
-            <div className="relative z-10 pt-16 sm:pt-24">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentSlide}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="mb-5"
-                >
-                  <span className="font-body text-xs font-semibold uppercase tracking-wider text-[#86efac] block mb-1.5">
-                    {btsSlides[currentSlide].tag}
-                  </span>
-                  <h3 className="font-display font-bold text-xl sm:text-2xl md:text-3xl text-cream tracking-tight mb-2">
-                    {btsSlides[currentSlide].title}
-                  </h3>
-                  <p className="font-body text-xs sm:text-sm text-cream/80 leading-relaxed max-w-md line-clamp-2">
-                    {btsSlides[currentSlide].caption}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Controls & Progress Dots */}
-              <div className="flex items-center justify-between gap-4 pt-4 border-t border-white/15">
-                {/* Dot Indicators */}
-                <div className="flex items-center gap-1.5">
-                  {btsSlides.map((_, i) => (
+            {/* Main Stage: Vertical Thumbnail Strip + Large Active Photo View */}
+            <div className="my-auto py-3 flex flex-row items-center gap-3 sm:gap-4 md:gap-5 w-full">
+              {/* Left: Vertical Thumbnails Strip */}
+              <div className="flex flex-col gap-2 sm:gap-2.5 shrink-0 py-1">
+                {btsPhotos.map((photo, i) => {
+                  const isActive = activePhotoIndex === i;
+                  return (
                     <button
-                      key={i}
+                      key={photo.src + i}
                       type="button"
-                      onClick={() => setCurrentSlide(i)}
-                      aria-label={`Go to slide ${i + 1}`}
-                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                        currentSlide === i
-                          ? "w-7 bg-cream"
-                          : "w-2 bg-cream/30 hover:bg-cream/60"
+                      onClick={() => setActivePhotoIndex(i)}
+                      onMouseEnter={() => setActivePhotoIndex(i)}
+                      data-cursor="hover"
+                      aria-label={`View photo ${i + 1}`}
+                      className={`relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl sm:rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer ${
+                        isActive
+                          ? "border-2 border-ink ring-2 ring-violet/40 scale-105 opacity-100 shadow-md"
+                          : "border border-ink/15 opacity-60 hover:opacity-95 hover:scale-105 hover:border-ink/40"
                       }`}
-                    />
-                  ))}
-                </div>
+                    >
+                      <Image
+                        src={photo.src}
+                        alt={photo.alt}
+                        fill
+                        sizes="60px"
+                        className="object-cover"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
 
-                {/* Arrow Nav Buttons */}
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={prevSlide}
-                    data-cursor="hover"
-                    aria-label="Previous slide"
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-cream/15 hover:bg-cream hover:text-ink text-cream border border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
+              {/* Right: Large Clean Active Photo (No Caption) */}
+              <div className="relative flex-1 aspect-[4/3] sm:aspect-[1/1] md:aspect-[4/3] min-h-[280px] sm:min-h-[320px] md:min-h-[340px] w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-ink/5 border border-ink/10 shadow-sm">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activePhotoIndex}
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.02 }}
+                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute inset-0"
                   >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
+                    <Image
+                      src={btsPhotos[activePhotoIndex].src}
+                      alt={btsPhotos[activePhotoIndex].alt}
+                      fill
+                      sizes="(min-width: 1024px) 45vw, 90vw"
+                      className="object-cover"
+                      priority={activePhotoIndex === 0}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Bottom Bar: Minimal Navigation Strip */}
+            <div className="pt-3 border-t border-ink/8 flex items-center justify-between text-xs text-ink-soft/70">
+              <span className="font-body text-[11px] sm:text-xs">
+                Hover or click thumbnails to explore
+              </span>
+              <div className="flex items-center gap-1.5">
+                {btsPhotos.map((_, i) => (
                   <button
+                    key={i}
                     type="button"
-                    onClick={nextSlide}
-                    data-cursor="hover"
-                    aria-label="Next slide"
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-cream/15 hover:bg-cream hover:text-ink text-cream border border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
+                    onClick={() => setActivePhotoIndex(i)}
+                    aria-label={`Slide ${i + 1}`}
+                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      activePhotoIndex === i
+                        ? "w-6 bg-ink"
+                        : "w-1.5 bg-ink/20 hover:bg-ink/40"
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           </motion.div>
