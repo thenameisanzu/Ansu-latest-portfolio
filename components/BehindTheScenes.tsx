@@ -1,181 +1,609 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+import React, {
+  useRef,
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+  Suspense,
+} from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { useTexture } from "@react-three/drei";
+import * as THREE from "three";
+import { motion } from "framer-motion";
 
-export interface BTSPhoto {
-  id: string;
-  title: string;
-  subtitle: string;
-  location: string;
-  category: string;
-  src: string;
-  year?: string;
-  gear?: string;
+type ImageItem = string | { src: string; alt?: string; title?: string; tag?: string };
+
+interface FadeSettings {
+  fadeIn: {
+    start: number;
+    end: number;
+  };
+  fadeOut: {
+    start: number;
+    end: number;
+  };
 }
 
-const placeholderPhotos: BTSPhoto[] = [
+interface BlurSettings {
+  blurIn: {
+    start: number;
+    end: number;
+  };
+  blurOut: {
+    start: number;
+    end: number;
+  };
+  maxBlur: number;
+}
+
+interface InfiniteGalleryProps {
+  images: ImageItem[];
+  speed?: number;
+  zSpacing?: number;
+  visibleCount?: number;
+  fadeSettings?: FadeSettings;
+  blurSettings?: BlurSettings;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+interface PlaneData {
+  index: number;
+  z: number;
+  imageIndex: number;
+  x: number;
+  y: number;
+}
+
+const DEFAULT_DEPTH_RANGE = 50;
+const MAX_HORIZONTAL_OFFSET = 8;
+const MAX_VERTICAL_OFFSET = 8;
+
+// BTS Development, Designing, Workspace & Architecture placeholders
+export const btsWorkItems: ImageItem[] = [
   {
-    id: "photo-1",
-    title: "Golden Hour Mirage",
-    subtitle: "Coastal reflections & quiet tides",
-    location: "Varkala Cliff, Kerala",
-    category: "Landscape & Film",
-    year: "2026",
-    gear: "35mm • f/1.8",
-    src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop",
+    src: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
+    title: "Full-Stack Code Architecture",
+    tag: "Next.js & TypeScript",
   },
   {
-    id: "photo-2",
-    title: "Brutalist Geometry",
-    subtitle: "Concrete textures and angled sunlight",
-    location: "Kochi, India",
-    category: "Architecture",
-    year: "2025",
-    gear: "50mm • f/2.8",
-    src: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop",
+    src: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?q=80&w=1200&auto=format&fit=crop",
+    title: "UI/UX & Figma Systems",
+    tag: "Design Direction",
   },
   {
-    id: "photo-3",
-    title: "Midnight Noir",
-    subtitle: "Street shadows & ambient neon",
-    location: "Bangalore",
-    category: "Street & Motion",
-    year: "2026",
-    gear: "28mm • f/1.4",
-    src: "https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=1200&auto=format&fit=crop",
+    src: "https://images.unsplash.com/photo-1593062096033-9a26b09da705?q=80&w=1200&auto=format&fit=crop",
+    title: "Minimal Studio Desk",
+    tag: "Studio Workspace",
   },
   {
-    id: "photo-4",
-    title: "Studio Analog Session",
-    subtitle: "Tactile film gear & creative staging",
-    location: "Aethra Studio, Kottayam",
-    category: "Behind The Scenes",
-    year: "2026",
-    gear: "85mm • f/1.4",
-    src: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop",
+    src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop",
+    title: "Late Night Engineering",
+    tag: "Component Building",
   },
   {
-    id: "photo-5",
-    title: "Emerald Mist",
-    subtitle: "Morning dew over Western Ghats tea plantations",
-    location: "Munnar, Kerala",
-    category: "Nature & Mood",
-    year: "2025",
-    gear: "24-70mm • f/2.8",
-    src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop",
+    src: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1200&auto=format&fit=crop",
+    title: "Creative Wireframing",
+    tag: "Information Architecture",
   },
   {
-    id: "photo-6",
-    title: "Raw Grain & Light",
-    subtitle: "Experimental light streaks and motion blur",
-    location: "Night Drive",
-    category: "Abstract",
-    year: "2026",
-    gear: "35mm • 1/4s",
-    src: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1200&auto=format&fit=crop",
+    src: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1200&auto=format&fit=crop",
+    title: "Performance & WebGL Tuning",
+    tag: "Shader Experiments",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop",
+    title: "Client Sprint Reviews",
+    tag: "Aethra Studio",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=1200&auto=format&fit=crop",
+    title: "Design System Tokens",
+    tag: "Typography & Layouts",
   },
 ];
 
-export default function BehindTheScenes() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isInteracting, setIsInteracting] = useState(false);
-  const [lightboxPhoto, setLightboxPhoto] = useState<BTSPhoto | null>(null);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const total = placeholderPhotos.length;
+const createClothMaterial = () => {
+  return new THREE.ShaderMaterial({
+    transparent: true,
+    uniforms: {
+      map: { value: null },
+      opacity: { value: 1.0 },
+      blurAmount: { value: 0.0 },
+      scrollForce: { value: 0.0 },
+      time: { value: 0.0 },
+      isHovered: { value: 0.0 },
+    },
+    vertexShader: `
+      uniform float scrollForce;
+      uniform float time;
+      uniform float isHovered;
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      
+      void main() {
+        vUv = uv;
+        vNormal = normal;
+        
+        vec3 pos = position;
+        
+        // Create smooth curving based on scroll force
+        float curveIntensity = scrollForce * 0.3;
+        
+        // Base curve across the plane based on distance from center
+        float distanceFromCenter = length(pos.xy);
+        float curve = distanceFromCenter * distanceFromCenter * curveIntensity;
+        
+        // Add gentle cloth-like ripples
+        float ripple1 = sin(pos.x * 2.0 + scrollForce * 3.0) * 0.02;
+        float ripple2 = sin(pos.y * 2.5 + scrollForce * 2.0) * 0.015;
+        float clothEffect = (ripple1 + ripple2) * abs(curveIntensity) * 2.0;
+        
+        // Flag waving effect when hovered
+        float flagWave = 0.0;
+        if (isHovered > 0.5) {
+          float wavePhase = pos.x * 3.0 + time * 8.0;
+          float waveAmplitude = sin(wavePhase) * 0.1;
+          float dampening = smoothstep(-0.5, 0.5, pos.x);
+          flagWave = waveAmplitude * dampening;
+          
+          float secondaryWave = sin(pos.x * 5.0 + time * 12.0) * 0.03 * dampening;
+          flagWave += secondaryWave;
+        }
+        
+        // Apply Z displacement for curving effect with cloth ripples and flag wave
+        pos.z -= (curve + clothEffect + flagWave);
+        
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D map;
+      uniform float opacity;
+      uniform float blurAmount;
+      uniform float scrollForce;
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      
+      void main() {
+        vec4 color = texture2D(map, vUv);
+        
+        // Simple blur approximation
+        if (blurAmount > 0.0) {
+          vec2 texelSize = 1.0 / vec2(512.0, 512.0);
+          vec4 blurred = vec4(0.0);
+          float total = 0.0;
+          
+          for (float x = -2.0; x <= 2.0; x += 1.0) {
+            for (float y = -2.0; y <= 2.0; y += 1.0) {
+              vec2 offset = vec2(x, y) * texelSize * blurAmount;
+              float weight = 1.0 / (1.0 + length(vec2(x, y)));
+              blurred += texture2D(map, vUv + offset) * weight;
+              total += weight;
+            }
+          }
+          color = blurred / total;
+        }
+        
+        // Add subtle lighting effect based on curving
+        float curveHighlight = abs(scrollForce) * 0.05;
+        color.rgb += vec3(curveHighlight * 0.1);
+        
+        gl_FragColor = vec4(color.rgb, color.a * opacity);
+      }
+    `,
+  });
+};
 
-  const resetInactivityTimer = useCallback(() => {
-    setIsInteracting(true);
-    if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
-    inactivityTimerRef.current = setTimeout(() => {
-      setIsInteracting(false);
-    }, 3000);
+function ImagePlane({
+  texture,
+  position,
+  scale,
+  material,
+}: {
+  texture: THREE.Texture;
+  position: [number, number, number];
+  scale: [number, number, number];
+  material: THREE.ShaderMaterial;
+}) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (material && texture) {
+      material.uniforms.map.value = texture;
+    }
+  }, [material, texture]);
+
+  useEffect(() => {
+    if (material && material.uniforms) {
+      material.uniforms.isHovered.value = isHovered ? 1.0 : 0.0;
+    }
+  }, [material, isHovered]);
+
+  return (
+    <mesh
+      ref={meshRef}
+      position={position}
+      scale={scale}
+      material={material}
+      onPointerEnter={() => setIsHovered(true)}
+      onPointerLeave={() => setIsHovered(false)}
+    >
+      <planeGeometry args={[1, 1, 32, 32]} />
+    </mesh>
+  );
+}
+
+function GalleryScene({
+  images,
+  speed = 1,
+  visibleCount = 8,
+  fadeSettings = {
+    fadeIn: { start: 0.05, end: 0.15 },
+    fadeOut: { start: 0.85, end: 0.95 },
+  },
+  blurSettings = {
+    blurIn: { start: 0.0, end: 0.1 },
+    blurOut: { start: 0.9, end: 1.0 },
+    maxBlur: 3.0,
+  },
+}: Omit<InfiniteGalleryProps, "className" | "style">) {
+  const [scrollVelocity, setScrollVelocity] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(true);
+  const lastInteraction = useRef(Date.now());
+
+  const normalizedImages = useMemo(
+    () =>
+      images.map((img) =>
+        typeof img === "string" ? { src: img, alt: "" } : img
+      ),
+    [images]
+  );
+
+  const textureUrls = useMemo(
+    () => normalizedImages.map((img) => img.src),
+    [normalizedImages]
+  );
+  const textures = useTexture(textureUrls);
+
+  // Create materials pool
+  const materials = useMemo(
+    () => Array.from({ length: visibleCount }, () => createClothMaterial()),
+    [visibleCount]
+  );
+
+  const spatialPositions = useMemo(() => {
+    const positions: { x: number; y: number }[] = [];
+    const maxHorizontalOffset = MAX_HORIZONTAL_OFFSET;
+    const maxVerticalOffset = MAX_VERTICAL_OFFSET;
+
+    for (let i = 0; i < visibleCount; i++) {
+      const horizontalAngle = (i * 2.618) % (Math.PI * 2);
+      const verticalAngle = (i * 1.618 + Math.PI / 3) % (Math.PI * 2);
+
+      const horizontalRadius = (i % 3) * 1.2;
+      const verticalRadius = ((i + 1) % 4) * 0.8;
+
+      const x =
+        (Math.sin(horizontalAngle) * horizontalRadius * maxHorizontalOffset) / 3;
+      const y =
+        (Math.cos(verticalAngle) * verticalRadius * maxVerticalOffset) / 4;
+
+      positions.push({ x, y });
+    }
+
+    return positions;
+  }, [visibleCount]);
+
+  const totalImages = normalizedImages.length;
+  const depthRange = DEFAULT_DEPTH_RANGE;
+
+  // Initialize plane data
+  const planesData = useRef<PlaneData[]>(
+    Array.from({ length: visibleCount }, (_, i) => ({
+      index: i,
+      z: visibleCount > 0 ? ((depthRange / visibleCount) * i) % depthRange : 0,
+      imageIndex: totalImages > 0 ? i % totalImages : 0,
+      x: spatialPositions[i]?.x ?? 0,
+      y: spatialPositions[i]?.y ?? 0,
+    }))
+  );
+
+  useEffect(() => {
+    planesData.current = Array.from({ length: visibleCount }, (_, i) => ({
+      index: i,
+      z:
+        visibleCount > 0
+          ? ((depthRange / Math.max(visibleCount, 1)) * i) % depthRange
+          : 0,
+      imageIndex: totalImages > 0 ? i % totalImages : 0,
+      x: spatialPositions[i]?.x ?? 0,
+      y: spatialPositions[i]?.y ?? 0,
+    }));
+  }, [depthRange, spatialPositions, totalImages, visibleCount]);
+
+  // Handle scroll input
+  const handleWheel = useCallback(
+    (event: WheelEvent) => {
+      event.preventDefault();
+      setScrollVelocity((prev) => prev + event.deltaY * 0.01 * speed);
+      setAutoPlay(false);
+      lastInteraction.current = Date.now();
+    },
+    [speed]
+  );
+
+  // Handle keyboard input
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+        setScrollVelocity((prev) => prev - 2 * speed);
+        setAutoPlay(false);
+        lastInteraction.current = Date.now();
+      } else if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+        setScrollVelocity((prev) => prev + 2 * speed);
+        setAutoPlay(false);
+        lastInteraction.current = Date.now();
+      }
+    },
+    [speed]
+  );
+
+  useEffect(() => {
+    const canvas = document.querySelector("#bts-canvas-container canvas");
+    if (canvas) {
+      canvas.addEventListener("wheel", handleWheel as unknown as EventListener, {
+        passive: false,
+      });
+      window.addEventListener("keydown", handleKeyDown);
+
+      return () => {
+        canvas.removeEventListener("wheel", handleWheel as unknown as EventListener);
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [handleWheel, handleKeyDown]);
+
+  // Auto-play logic
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Date.now() - lastInteraction.current > 3000) {
+        setAutoPlay(true);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  const nextSlide = useCallback(() => {
-    setActiveIndex((prev) => (prev + 1) % total);
-    resetInactivityTimer();
-  }, [total, resetInactivityTimer]);
-
-  const prevSlide = useCallback(() => {
-    setActiveIndex((prev) => (prev - 1 + total) % total);
-    resetInactivityTimer();
-  }, [total, resetInactivityTimer]);
-
-  // Auto-play interval
-  useEffect(() => {
-    if (isInteracting) return;
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % total);
-    }, 3500);
-    return () => clearInterval(interval);
-  }, [isInteracting, total]);
-
-  // Keyboard arrow keys navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        prevSlide();
-      } else if (e.key === "ArrowRight") {
-        nextSlide();
-      } else if (e.key === "Escape" && lightboxPhoto) {
-        setLightboxPhoto(null);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [nextSlide, prevSlide, lightboxPhoto]);
-
-  // Mouse wheel navigation with debounce
-  const lastWheelTime = useRef<number>(0);
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    const now = Date.now();
-    if (now - lastWheelTime.current < 400) return;
-    if (Math.abs(e.deltaX) > 20 || Math.abs(e.deltaY) > 20) {
-      if (e.deltaX > 20 || e.deltaY > 20) {
-        nextSlide();
-      } else {
-        prevSlide();
-      }
-      lastWheelTime.current = now;
+  useFrame((state, delta) => {
+    if (autoPlay) {
+      setScrollVelocity((prev) => prev + 0.35 * delta);
     }
-  };
 
-  // Touch Swipe Handlers
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStartX(e.touches[0].clientX);
-    resetInactivityTimer();
-  };
+    setScrollVelocity((prev) => prev * 0.95);
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX === null) return;
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartX - touchEndX;
-    if (Math.abs(diff) > 40) {
-      if (diff > 0) nextSlide();
-      else prevSlide();
+    const time = state.clock.getElapsedTime();
+    materials.forEach((material) => {
+      if (material && material.uniforms) {
+        material.uniforms.time.value = time;
+        material.uniforms.scrollForce.value = scrollVelocity;
+      }
+    });
+
+    const imageAdvance =
+      totalImages > 0 ? visibleCount % totalImages || totalImages : 0;
+    const totalRange = depthRange;
+
+    planesData.current.forEach((plane, i) => {
+      let newZ = plane.z + scrollVelocity * delta * 10;
+      let wrapsForward = 0;
+      let wrapsBackward = 0;
+
+      if (newZ >= totalRange) {
+        wrapsForward = Math.floor(newZ / totalRange);
+        newZ -= totalRange * wrapsForward;
+      } else if (newZ < 0) {
+        wrapsBackward = Math.ceil(-newZ / totalRange);
+        newZ += totalRange * wrapsBackward;
+      }
+
+      if (wrapsForward > 0 && imageAdvance > 0 && totalImages > 0) {
+        plane.imageIndex =
+          (plane.imageIndex + wrapsForward * imageAdvance) % totalImages;
+      }
+
+      if (wrapsBackward > 0 && imageAdvance > 0 && totalImages > 0) {
+        const step = plane.imageIndex - wrapsBackward * imageAdvance;
+        plane.imageIndex = ((step % totalImages) + totalImages) % totalImages;
+      }
+
+      plane.z = ((newZ % totalRange) + totalRange) % totalRange;
+      plane.x = spatialPositions[i]?.x ?? 0;
+      plane.y = spatialPositions[i]?.y ?? 0;
+
+      const normalizedPosition = plane.z / totalRange;
+      let opacity = 1;
+
+      if (
+        normalizedPosition >= fadeSettings.fadeIn.start &&
+        normalizedPosition <= fadeSettings.fadeIn.end
+      ) {
+        const fadeInProgress =
+          (normalizedPosition - fadeSettings.fadeIn.start) /
+          (fadeSettings.fadeIn.end - fadeSettings.fadeIn.start);
+        opacity = fadeInProgress;
+      } else if (normalizedPosition < fadeSettings.fadeIn.start) {
+        opacity = 0;
+      } else if (
+        normalizedPosition >= fadeSettings.fadeOut.start &&
+        normalizedPosition <= fadeSettings.fadeOut.end
+      ) {
+        const fadeOutProgress =
+          (normalizedPosition - fadeSettings.fadeOut.start) /
+          (fadeSettings.fadeOut.end - fadeSettings.fadeOut.start);
+        opacity = 1 - fadeOutProgress;
+      } else if (normalizedPosition > fadeSettings.fadeOut.end) {
+        opacity = 0;
+      }
+
+      opacity = Math.max(0, Math.min(1, opacity));
+
+      let blur = 0;
+      if (
+        normalizedPosition >= blurSettings.blurIn.start &&
+        normalizedPosition <= blurSettings.blurIn.end
+      ) {
+        const blurInProgress =
+          (normalizedPosition - blurSettings.blurIn.start) /
+          (blurSettings.blurIn.end - blurSettings.blurIn.start);
+        blur = blurSettings.maxBlur * (1 - blurInProgress);
+      } else if (normalizedPosition < blurSettings.blurIn.start) {
+        blur = blurSettings.maxBlur;
+      } else if (
+        normalizedPosition >= blurSettings.blurOut.start &&
+        normalizedPosition <= blurSettings.blurOut.end
+      ) {
+        const blurOutProgress =
+          (normalizedPosition - blurSettings.blurOut.start) /
+          (blurSettings.blurOut.end - blurSettings.blurOut.start);
+        blur = blurSettings.maxBlur * blurOutProgress;
+      } else if (normalizedPosition > blurSettings.blurOut.end) {
+        blur = blurSettings.maxBlur;
+      }
+
+      blur = Math.max(0, Math.min(blurSettings.maxBlur, blur));
+
+      const material = materials[i];
+      if (material && material.uniforms) {
+        material.uniforms.opacity.value = opacity;
+        material.uniforms.blurAmount.value = blur;
+      }
+    });
+  });
+
+  if (normalizedImages.length === 0) return null;
+
+  return (
+    <>
+      {planesData.current.map((plane, i) => {
+        const currentTexture = Array.isArray(textures)
+          ? textures[plane.imageIndex]
+          : textures;
+        const material = materials[i];
+
+        if (!currentTexture || !material) return null;
+
+        const worldZ = plane.z - depthRange / 2;
+        const aspect = 16 / 10;
+        const scale: [number, number, number] = [2.4 * aspect, 2.4, 1];
+
+        return (
+          <ImagePlane
+            key={plane.index}
+            texture={currentTexture as THREE.Texture}
+            position={[plane.x, plane.y, worldZ]}
+            scale={scale}
+            material={material}
+          />
+        );
+      })}
+    </>
+  );
+}
+
+// Fallback for non-WebGL environments
+function FallbackGallery({ images }: { images: ImageItem[] }) {
+  const normalizedImages = useMemo(
+    () =>
+      images.map((img) =>
+        typeof img === "string" ? { src: img, alt: "" } : img
+      ),
+    [images]
+  );
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
+      {normalizedImages.map((img, i) => (
+        <div key={i} className="aspect-[16/10] rounded-2xl overflow-hidden bg-ink/5 border border-ink/10">
+          <img
+            src={img.src}
+            alt={img.alt || "Behind the scenes"}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function InfiniteGalleryCanvas({
+  images,
+  className = "w-full h-[520px] sm:h-[600px] md:h-[680px]",
+  style,
+  fadeSettings = {
+    fadeIn: { start: 0.05, end: 0.22 },
+    fadeOut: { start: 0.78, end: 0.95 },
+  },
+  blurSettings = {
+    blurIn: { start: 0.0, end: 0.1 },
+    blurOut: { start: 0.78, end: 0.95 },
+    maxBlur: 4.0,
+  },
+}: InfiniteGalleryProps) {
+  const [webglSupported, setWebglSupported] = useState(true);
+
+  useEffect(() => {
+    try {
+      const canvas = document.createElement("canvas");
+      const gl =
+        canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+      if (!gl) setWebglSupported(false);
+    } catch {
+      setWebglSupported(false);
     }
-    setTouchStartX(null);
-  };
+  }, []);
 
+  if (!webglSupported) {
+    return (
+      <div className={className} style={style}>
+        <FallbackGallery images={images} />
+      </div>
+    );
+  }
+
+  return (
+    <div id="bts-canvas-container" className={className} style={style}>
+      <Canvas
+        camera={{ position: [0, 0, 0], fov: 55 }}
+        gl={{ antialias: true, alpha: true }}
+      >
+        <Suspense fallback={null}>
+          <GalleryScene
+            images={images}
+            fadeSettings={fadeSettings}
+            blurSettings={blurSettings}
+          />
+        </Suspense>
+      </Canvas>
+    </div>
+  );
+}
+
+export default function BehindTheScenes() {
   return (
     <section
       id="behind-the-scenes"
       className="relative overflow-hidden px-4 sm:px-8 md:px-10 lg:px-12 py-20 md:py-32 border-t border-ink/10 select-none"
-      onWheel={handleWheel}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onMouseEnter={resetInactivityTimer}
     >
       {/* Ambient background aura */}
       <div
         aria-hidden
-        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full opacity-20 blur-[120px]"
+        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85vw] h-[85vw] max-w-[850px] max-h-[850px] rounded-full opacity-25 blur-[120px]"
         style={{
           background:
-            "radial-gradient(circle, var(--color-lilac) 0%, var(--color-sky) 40%, var(--color-violet) 70%, transparent 100%)",
+            "radial-gradient(circle, var(--color-lilac) 0%, var(--color-sky) 40%, var(--color-violet) 75%, transparent 100%)",
         }}
       />
 
@@ -186,284 +614,49 @@ export default function BehindTheScenes() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col items-center text-center mb-8 sm:mb-12"
+          className="flex flex-col items-center text-center mb-6 sm:mb-10 relative z-10"
         >
           <span className="font-body text-xs font-semibold uppercase tracking-wider text-ink-soft mb-2.5 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-violet animate-pulse" />
-            Behind The Scenes
+            Behind The Build
           </span>
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-ink tracking-tight">
-            Frames &amp; Captures.
+            Workspace, Code &amp; Design.
           </h2>
-          <p className="font-body text-sm sm:text-base text-ink-soft mt-3 max-w-md">
-            Moments, analog experiments, and visual perspectives from behind the lens.
+          <p className="font-body text-sm sm:text-base text-ink-soft mt-3 max-w-lg">
+            A glimpse into the late-night sprints, Figma wireframe iterations, terminal shaders, and daily studio setups.
           </p>
         </motion.div>
 
-        {/* 3D Curved Gallery Stage */}
-        <div className="relative w-full h-[420px] sm:h-[480px] md:h-[560px] flex items-center justify-center overflow-visible">
-          {/* 3D Perspective Canvas */}
-          <div
-            className="relative w-full h-full flex items-center justify-center"
-            style={{ perspective: "1200px" }}
-          >
-            {/* Center Background Typography Overlay */}
-            <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center select-none overflow-hidden">
-              <motion.span
-                key={activeIndex}
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 0.08, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 1.1, y: -20 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="font-serif italic font-normal text-[18vw] md:text-[14vw] text-ink tracking-tight whitespace-nowrap leading-none drop-shadow-sm"
-              >
-                {placeholderPhotos[activeIndex]?.title.split(" ")[0] || "Shadway"}
-              </motion.span>
+        {/* 3D Infinite WebGL Gallery Stage */}
+        <div className="relative w-full rounded-3xl overflow-hidden bg-ink/[0.02] border border-ink/10 shadow-[0_16px_48px_rgba(32,28,38,0.06)] backdrop-blur-xl">
+          {/* Subtle Ambient Title watermark */}
+          <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center select-none overflow-hidden">
+            <span className="font-serif italic font-normal text-[16vw] md:text-[13vw] text-ink/5 tracking-tight whitespace-nowrap leading-none select-none">
+              Aethra Studio
+            </span>
+          </div>
+
+          {/* Interactive WebGL Scene */}
+          <InfiniteGalleryCanvas
+            images={btsWorkItems}
+            className="w-full h-[420px] sm:h-[500px] md:h-[600px] cursor-grab active:cursor-grabbing"
+          />
+
+          {/* Bottom Interactive Hint Banner */}
+          <div className="relative z-10 p-4 border-t border-ink/8 bg-cream/70 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#25D366] animate-ping" />
+              <span className="font-mono text-[10.5px] sm:text-[11px] font-semibold tracking-wider text-ink uppercase">
+                Interactive 3D Cloth Tunnel
+              </span>
             </div>
-
-            {/* Render 3D Cards */}
-            {placeholderPhotos.map((photo, index) => {
-              // Calculate circular offset relative to activeIndex
-              let offset = index - activeIndex;
-              if (offset > total / 2) offset -= total;
-              if (offset < -total / 2) offset += total;
-
-              const isCurrent = offset === 0;
-              const isVisible = Math.abs(offset) <= 2;
-
-              if (!isVisible) return null;
-
-              // 3D Transform math
-              const translateX = offset * 280; // horizontal separation
-              const translateZ = -Math.abs(offset) * 140; // push side cards into depth
-              const rotateY = offset * -26; // rotate towards center cylinder
-              const scale = 1 - Math.abs(offset) * 0.14;
-              const opacity = isCurrent ? 1 : 1 - Math.abs(offset) * 0.32;
-              const zIndex = 40 - Math.abs(offset) * 10;
-
-              return (
-                <motion.div
-                  key={photo.id}
-                  onClick={() => {
-                    if (isCurrent) {
-                      setLightboxPhoto(photo);
-                    } else {
-                      setActiveIndex(index);
-                      resetInactivityTimer();
-                    }
-                  }}
-                  animate={{
-                    x: translateX,
-                    z: translateZ,
-                    rotateY: rotateY,
-                    scale: scale,
-                    opacity: opacity,
-                  }}
-                  transition={{
-                    duration: 0.65,
-                    ease: [0.25, 1, 0.5, 1],
-                  }}
-                  style={{
-                    zIndex: zIndex,
-                    transformStyle: "preserve-3d",
-                  }}
-                  className={`absolute w-[240px] sm:w-[280px] md:w-[320px] lg:w-[340px] aspect-[4/5] rounded-3xl overflow-hidden border cursor-pointer transition-shadow duration-500 ${
-                    isCurrent
-                      ? "border-white/60 shadow-[0_24px_60px_rgba(32,28,38,0.22)] ring-1 ring-ink/10"
-                      : "border-ink/10 shadow-[0_12px_32px_rgba(32,28,38,0.08)] brightness-90 hover:brightness-100"
-                  }`}
-                  data-cursor="hover"
-                >
-                  <Image
-                    src={photo.src}
-                    alt={photo.title}
-                    fill
-                    sizes="(min-width: 1024px) 340px, (min-width: 768px) 300px, 240px"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    priority={isCurrent}
-                  />
-
-                  {/* Top Category Badge */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className="inline-block px-3 py-1 rounded-full bg-black/40 backdrop-blur-md text-[11px] font-body font-medium text-white/90 border border-white/15">
-                      {photo.category}
-                    </span>
-                  </div>
-
-                  {/* Gradient Scrim for Bottom Details */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent flex flex-col justify-end p-5 text-white">
-                    <span className="text-[10px] font-mono tracking-wider uppercase text-white/60 mb-1">
-                      {photo.location} {photo.year && `• ${photo.year}`}
-                    </span>
-                    <h3 className="font-display font-bold text-lg sm:text-xl leading-snug tracking-tight text-white">
-                      {photo.title}
-                    </h3>
-                    <p className="font-body text-xs text-white/75 mt-1 line-clamp-1">
-                      {photo.subtitle}
-                    </p>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* Left Navigation Arrow */}
-          <button
-            type="button"
-            onClick={prevSlide}
-            aria-label="Previous photo"
-            data-cursor="hover"
-            className="absolute left-2 sm:left-6 md:left-10 z-50 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-cream/90 md:bg-cream/80 backdrop-blur-md border border-ink/15 shadow-[0_8px_24px_rgba(32,28,38,0.1)] text-ink flex items-center justify-center hover:scale-110 hover:bg-ink hover:text-cream transition-all duration-300 cursor-pointer"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m15 18-6-6 6-6"/>
-            </svg>
-          </button>
-
-          {/* Right Navigation Arrow */}
-          <button
-            type="button"
-            onClick={nextSlide}
-            aria-label="Next photo"
-            data-cursor="hover"
-            className="absolute right-2 sm:right-6 md:right-10 z-50 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-cream/90 md:bg-cream/80 backdrop-blur-md border border-ink/15 shadow-[0_8px_24px_rgba(32,28,38,0.1)] text-ink flex items-center justify-center hover:scale-110 hover:bg-ink hover:text-cream transition-all duration-300 cursor-pointer"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m9 18 6-6-6-6"/>
-            </svg>
-          </button>
-        </div>
-
-        {/* Bottom Pagination Dots & Dynamic Hint */}
-        <div className="flex flex-col items-center gap-4 mt-6 sm:mt-8">
-          {/* Pagination Indicators */}
-          <div className="flex items-center gap-2">
-            {placeholderPhotos.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => {
-                  setActiveIndex(i);
-                  resetInactivityTimer();
-                }}
-                aria-label={`Go to slide ${i + 1}`}
-                className={`transition-all duration-300 rounded-full cursor-pointer ${
-                  i === activeIndex
-                    ? "w-8 h-2 bg-ink"
-                    : "w-2 h-2 bg-ink/20 hover:bg-ink/40"
-                }`}
-              />
-            ))}
-          </div>
-
-          {/* Interaction Instruction Banner */}
-          <div className="text-center font-mono text-[10px] sm:text-[11px] tracking-widest uppercase text-ink-soft/70 space-y-1">
-            <p className="font-semibold">
-              USE MOUSE WHEEL, ARROW KEYS, OR TOUCH TO NAVIGATE
-            </p>
-            <p className="text-ink-soft/50 text-[9.5px]">
-              {isInteracting
-                ? "AUTO-PLAY RESUMES AFTER 3 SECONDS OF INACTIVITY"
-                : "AUTO-PLAY ACTIVE"}
-            </p>
+            <div className="font-mono text-[10px] sm:text-[10.5px] tracking-wider uppercase text-ink-soft/70">
+              <span>Scroll wheel • Arrow keys • Drag &amp; Hover to wave</span>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Lightbox Modal */}
-      <AnimatePresence>
-        {lightboxPhoto && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setLightboxPhoto(null)}
-              className="absolute inset-0 bg-ink/90 backdrop-blur-xl"
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 20 }}
-              transition={{ duration: 0.35, ease: [0.76, 0, 0.24, 1] }}
-              className="relative z-10 max-w-4xl w-full max-h-[90vh] bg-cream rounded-3xl overflow-hidden shadow-2xl border border-ink/10 flex flex-col md:flex-row text-ink"
-            >
-              {/* Photo Area */}
-              <div className="relative w-full md:w-3/5 aspect-[4/5] md:aspect-auto md:min-h-[480px] bg-black">
-                <Image
-                  src={lightboxPhoto.src}
-                  alt={lightboxPhoto.title}
-                  fill
-                  className="object-cover"
-                  sizes="(min-width: 1024px) 600px, 90vw"
-                  priority
-                />
-              </div>
-
-              {/* Sidebar Info Area */}
-              <div className="w-full md:w-2/5 p-6 sm:p-8 flex flex-col justify-between bg-cream">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="px-3 py-1 rounded-full bg-violet/15 text-violet text-xs font-semibold">
-                      {lightboxPhoto.category}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setLightboxPhoto(null)}
-                      className="p-2 rounded-full hover:bg-ink/5 text-ink/70 hover:text-ink transition-colors cursor-pointer"
-                      aria-label="Close lightbox"
-                    >
-                      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
-                        <path d="M18 6L6 18M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-ink tracking-tight mb-2">
-                    {lightboxPhoto.title}
-                  </h3>
-                  <p className="font-body text-sm text-ink-soft leading-relaxed mb-6">
-                    {lightboxPhoto.subtitle}
-                  </p>
-
-                  <div className="space-y-3 pt-4 border-t border-ink/10">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-body text-ink-soft">Location</span>
-                      <span className="font-semibold text-ink">{lightboxPhoto.location}</span>
-                    </div>
-                    {lightboxPhoto.gear && (
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-body text-ink-soft">Lens / Setting</span>
-                        <span className="font-mono text-ink/80">{lightboxPhoto.gear}</span>
-                      </div>
-                    )}
-                    {lightboxPhoto.year && (
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-body text-ink-soft">Captured</span>
-                        <span className="font-mono text-ink/80">{lightboxPhoto.year}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="pt-6 border-t border-ink/10 flex items-center justify-between">
-                  <span className="text-xs font-body text-ink-soft">
-                    Shot by Ansu V S
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setLightboxPhoto(null)}
-                    className="px-5 py-2 rounded-full bg-ink text-cream text-xs font-semibold hover:bg-violet transition-colors cursor-pointer"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }
