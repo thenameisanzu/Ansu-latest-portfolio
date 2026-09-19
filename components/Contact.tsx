@@ -10,31 +10,31 @@ import MailSlider from "@/components/MailSlider";
 import PhoneSlider from "@/components/PhoneSlider";
 import { ChevronLeft, ChevronRight, Sparkles, Mail, MessageCircle, Copy, Check, ArrowUpRight } from "lucide-react";
 
-// Curated Behind The Scenes placeholder items
+// Behind The Scenes photography & studio moments
 const btsPhotos = [
   {
-    src: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
-    alt: "Code Architecture & Next.js",
+    src: "/images/IMG_20260707_204811.jpg",
+    alt: "Behind The Scenes 1",
   },
   {
-    src: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?q=80&w=1200&auto=format&fit=crop",
-    alt: "UI/UX & Design Systems",
+    src: "/images/IMG_20260707_214524.jpg",
+    alt: "Behind The Scenes 2",
   },
   {
-    src: "https://images.unsplash.com/photo-1593062096033-9a26b09da705?q=80&w=1200&auto=format&fit=crop",
-    alt: "Minimal Studio Desk",
+    src: "/images/IMG_20260726_101246.jpg",
+    alt: "Behind The Scenes 3",
   },
   {
-    src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop",
-    alt: "Late Night Engineering",
+    src: "/images/IMG_20260831_143005.jpg",
+    alt: "Behind The Scenes 4",
   },
   {
-    src: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1200&auto=format&fit=crop",
-    alt: "Information Architecture",
+    src: "/images/IMG_20260901_095618.jpg",
+    alt: "Behind The Scenes 5",
   },
   {
-    src: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1200&auto=format&fit=crop",
-    alt: "WebGL Shaders & Performance",
+    src: "/images/IMG_5898.jpg",
+    alt: "Behind The Scenes 6",
   },
 ];
 
