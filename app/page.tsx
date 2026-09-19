@@ -4,6 +4,7 @@ import About from "@/components/About";
 import Services from "@/components/Services";
 import Work from "@/components/Work";
 import Skills from "@/components/Skills";
+import BehindTheScenes from "@/components/BehindTheScenes";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import AethraSection from "@/components/AethraSection";
@@ -20,6 +21,7 @@ export default function Home() {
         <About />
         <Services />
         <Work />
+        <BehindTheScenes />
         <Skills />
         <Testimonials />
         <FAQ />
@@ -31,3 +33,4 @@ export default function Home() {
     </>
   );
 }
+
