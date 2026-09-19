@@ -72,9 +72,9 @@ export default function AethraSection() {
             <Image
               src="/images/aethra-logo.png"
               alt="Aethra Digital Solutions Logo"
-              width={220}
-              height={312}
-              className="w-32 sm:w-36 md:w-44 h-auto object-contain filter drop-shadow-[0_12px_28px_rgba(74,222,128,0.35)] group-hover:scale-105 group-hover:drop-shadow-[0_16px_36px_rgba(74,222,128,0.55)] transition-all duration-300"
+              width={260}
+              height={360}
+              className="w-36 sm:w-44 md:w-52 lg:w-56 h-auto object-contain filter drop-shadow-[0_12px_28px_rgba(74,222,128,0.35)] group-hover:scale-105 group-hover:drop-shadow-[0_16px_36px_rgba(74,222,128,0.55)] transition-all duration-300"
               priority
             />
           </motion.a>
