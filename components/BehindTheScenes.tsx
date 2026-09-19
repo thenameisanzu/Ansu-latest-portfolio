@@ -632,8 +632,8 @@ export default function BehindTheScenes() {
         <div className="relative w-full rounded-3xl overflow-hidden bg-ink/[0.02] border border-ink/10 shadow-[0_16px_48px_rgba(32,28,38,0.06)] backdrop-blur-xl">
           {/* Subtle Ambient Title watermark */}
           <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center select-none overflow-hidden">
-            <span className="font-serif italic font-normal text-[16vw] md:text-[13vw] text-ink/5 tracking-tight whitespace-nowrap leading-none select-none">
-              Aethra Studio
+            <span className="font-serif italic font-normal text-[15vw] md:text-[12vw] text-ink/5 tracking-tight whitespace-nowrap leading-none select-none">
+              Behind the Code
             </span>
           </div>
 
