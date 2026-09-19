@@ -31,7 +31,7 @@ export default function Work() {
           trigger: section,
           start: "top top",
           end: () => `+=${distance}`,
-          scrub: 1,
+          scrub: 1.2,
           pin: true,
           invalidateOnRefresh: true,
           anticipatePin: 1,
@@ -79,7 +79,7 @@ export default function Work() {
                   key={p.name}
                   onClick={() => setActiveProject(p)}
                   data-cursor="hover"
-                  className="group relative shrink-0 w-full lg:w-[45vw] xl:w-[42vw] aspect-[4/3] sm:aspect-[16/11] rounded-2xl md:rounded-3xl overflow-hidden flex flex-col justify-between p-6 sm:p-7 md:p-8 border border-ink/10 shadow-sm transition-all duration-500 hover:shadow-[0_20px_50px_-15px_rgba(155,142,199,0.35)] hover:-translate-y-1 cursor-pointer"
+                  className="group relative shrink-0 w-full lg:w-[45vw] xl:w-[42vw] aspect-[4/3] sm:aspect-[16/11] rounded-2xl md:rounded-3xl overflow-hidden flex flex-col justify-between p-6 sm:p-7 md:p-8 border border-ink/10 shadow-sm transition-all duration-500 hover:shadow-[0_20px_50px_-15px_rgba(155,142,199,0.35)] hover:-translate-y-1.5 cursor-pointer"
                   style={{ backgroundColor: p.color }}
                 >
                   <div
@@ -119,18 +119,18 @@ export default function Work() {
                     </div>
                   </div>
 
-                  {/* Bottom card content */}
+                  {/* Bottom title info */}
                   <div className="relative z-10">
                     <h3
-                      className={`font-display font-bold text-2xl sm:text-3xl md:text-4xl mb-2 tracking-tight ${
+                      className={`font-display font-extrabold text-2xl sm:text-3xl md:text-4xl tracking-tight leading-[1.05] mb-2 ${
                         p.dark ? "text-cream" : "text-ink"
                       }`}
                     >
                       {p.name}
                     </h3>
                     <p
-                      className={`font-body text-xs sm:text-sm md:text-base max-w-sm ${
-                        p.dark ? "text-cream/80" : "text-ink/70"
+                      className={`font-body text-xs sm:text-sm line-clamp-2 max-w-lg ${
+                        p.dark ? "text-cream/80" : "text-ink/80"
                       }`}
                     >
                       {p.blurb}
@@ -156,10 +156,10 @@ export default function Work() {
             />
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.94, y: 24 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
+              exit={{ opacity: 0, scale: 0.94, y: 24 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               className="relative z-10 w-full max-w-xl max-h-[90vh] overflow-y-auto bg-cream rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl border border-ink/10 text-ink"
             >
               {/* Header */}

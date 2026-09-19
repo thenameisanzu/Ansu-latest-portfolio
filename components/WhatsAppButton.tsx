@@ -48,7 +48,7 @@ export default function WhatsAppButton() {
           initial={{ opacity: 0, scale: 0.85, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.85, y: 16 }}
-          transition={{ duration: 0.35, ease: [0.76, 0, 0.24, 1] }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           data-cursor="hover"
           aria-label="Chat on WhatsApp"
           className="group fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 inline-flex items-center gap-2.5 p-2 pr-4 md:p-2.5 md:pr-4.5 rounded-full bg-cream/95 text-ink border border-ink/15 shadow-[0_10px_30px_rgba(32,28,38,0.12)] hover:shadow-[0_14px_36px_rgba(37,211,102,0.28)] hover:border-[#25D366]/50 backdrop-blur-md transition-all duration-300 hover:scale-105"

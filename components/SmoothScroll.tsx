@@ -22,11 +22,14 @@ export default function SmoothScroll({
     if (prefersReduced) return;
 
     const lenis = new Lenis({
-      duration: 1.05,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
       smoothWheel: true,
-      syncTouch: false, // Ensure native momentum on touch/iPad
-      touchMultiplier: 1.2,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.4,
+      syncTouch: false,
     });
     lenisRef.current = lenis;
 

@@ -34,9 +34,9 @@ export default function CustomCursor() {
     const loop = () => {
       const dx = mouseX - ringX;
       const dy = mouseY - ringY;
-      ringX += dx * 0.18;
-      ringY += dy * 0.18;
-      ring.style.transform = `translate3d(${ringX - 18}px, ${ringY - 18}px, 0)`;
+      ringX += dx * 0.14;
+      ringY += dy * 0.14;
+      ring.style.transform = `translate3d(${ringX - 17}px, ${ringY - 17}px, 0)`;
 
       if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
         raf = requestAnimationFrame(loop);
@@ -64,6 +64,16 @@ export default function CustomCursor() {
       mouseY = e.clientY;
       dot.style.transform = `translate3d(${mouseX - 3}px, ${mouseY - 3}px, 0)`;
       startLoop();
+    };
+
+    const onMouseDown = () => {
+      ring.style.transform += " scale(0.85)";
+      dot.style.transform += " scale(1.4)";
+    };
+
+    const onMouseUp = () => {
+      ring.style.transform = ring.style.transform.replace(" scale(0.85)", "");
+      dot.style.transform = dot.style.transform.replace(" scale(1.4)", "");
     };
 
     const onVisibilityChange = () => {
@@ -95,6 +105,8 @@ export default function CustomCursor() {
     };
 
     window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("mousedown", onMouseDown, { passive: true });
+    window.addEventListener("mouseup", onMouseUp, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     document.addEventListener("mouseover", onOver, { passive: true });
     document.addEventListener("mouseout", onOut, { passive: true });

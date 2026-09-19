@@ -88,7 +88,7 @@ export default function FAQ() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.35, ease: [0.76, 0, 0.24, 1] }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                     >
                       <div className="px-6 md:px-8 pb-6 md:pb-8 pt-0 font-body text-sm md:text-base text-ink-soft/90 leading-relaxed border-t border-ink/5 pt-4">
                         {faq.answer}

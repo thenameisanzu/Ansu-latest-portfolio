@@ -102,10 +102,10 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-wrap items-center gap-2 md:gap-3 mb-4 md:mb-6"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink/5 border border-ink/10 backdrop-blur-xs">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cream/70 border border-ink/10 shadow-xs backdrop-blur-md hover:border-ink/20 transition-all">
             <span className="relative flex h-2 w-2">
               <span className="status-dot-pulse absolute inline-flex h-full w-full rounded-full bg-sky opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-sky" />
@@ -114,7 +114,7 @@ export default function Hero() {
               Kerala, India
             </span>
             {time && (
-              <span className="font-mono text-[11px] md:text-xs text-ink/70 pl-1 border-l border-ink/15 font-medium">
+              <span className="font-mono text-[11px] md:text-xs text-ink/70 pl-1.5 border-l border-ink/15 font-medium">
                 {time}
               </span>
             )}
@@ -124,21 +124,21 @@ export default function Hero() {
           </span>
         </motion.div>
 
-        <h1 className="font-display font-extrabold text-ink leading-[0.98] tracking-tight text-[clamp(2.6rem,11.2vw,7.2vw)]">
+        <h1 className="font-display font-extrabold text-ink leading-[0.96] tracking-tight text-[clamp(2.6rem,11.2vw,7.2vw)]">
           {lines.map((line, i) => (
             <span key={line} className="block overflow-hidden pb-2 md:pb-3 -mb-2 md:-mb-3">
               <motion.span
-                className={`block pb-1 ${
+                className={`block pb-1 will-change-transform ${
                   line.includes("Aethra")
                     ? "bg-gradient-to-r from-ink via-violet to-ink bg-clip-text text-transparent"
                     : ""
                 }`}
-                initial={{ y: "115%" }}
-                animate={{ y: "0%" }}
+                initial={{ y: "120%", opacity: 0 }}
+                animate={{ y: "0%", opacity: 1 }}
                 transition={{
-                  duration: 0.9,
-                  delay: 0.15 + i * 0.1,
-                  ease: [0.76, 0, 0.24, 1],
+                  duration: 1.1,
+                  delay: 0.12 + i * 0.12,
+                  ease: [0.16, 1, 0.3, 1],
                 }}
               >
                 {line}
@@ -148,12 +148,12 @@ export default function Hero() {
         </h1>
 
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.7 }}
+          transition={{ duration: 0.9, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
           className="mt-6 md:mt-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
         >
-          <p className="font-body text-base md:text-lg text-ink-soft max-w-sm">
+          <p className="font-body text-base md:text-lg text-ink-soft max-w-sm leading-relaxed">
             I build fast, cinematic websites — and run the studio behind
             them.
           </p>
@@ -166,10 +166,10 @@ export default function Hero() {
                 ?.scrollIntoView({ behavior: "smooth" });
             }}
             data-cursor="hover"
-            className="group relative inline-flex items-center gap-2 font-body text-sm font-medium pb-1 shrink-0 text-ink w-max"
+            className="group relative inline-flex items-center gap-2 font-body text-sm font-medium pb-1.5 shrink-0 text-ink w-max"
           >
             <span>See the work</span>
-            <span className="block w-full h-[1.5px] bg-gradient-to-r from-violet via-lilac to-sky absolute bottom-0 left-0 transition-transform origin-left group-hover:scale-x-110" />
+            <span className="block w-full h-[1.5px] bg-gradient-to-r from-violet via-lilac to-sky absolute bottom-0 left-0 transition-transform duration-300 origin-left group-hover:scale-x-110" />
           </a>
         </motion.div>
       </div>
