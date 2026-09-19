@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -80,41 +81,33 @@ export default function Work() {
                   key={p.name}
                   onClick={() => setActiveProject(p)}
                   data-cursor="hover"
-                  className="group relative shrink-0 w-full lg:w-[45vw] xl:w-[42vw] aspect-[4/3] sm:aspect-[16/11] rounded-2xl md:rounded-3xl overflow-hidden flex flex-col justify-between p-6 sm:p-7 md:p-8 border border-ink/10 shadow-sm transition-all duration-500 hover:shadow-[0_20px_50px_-15px_rgba(155,142,199,0.35)] hover:-translate-y-1.5 cursor-pointer"
-                  style={{ backgroundColor: p.color }}
+                  className="group relative shrink-0 w-full lg:w-[45vw] xl:w-[42vw] aspect-[4/3] sm:aspect-[16/11] rounded-2xl md:rounded-3xl overflow-hidden flex flex-col justify-between p-6 sm:p-7 md:p-8 border border-ink/10 shadow-sm transition-all duration-500 hover:shadow-[0_20px_50px_-15px_rgba(155,142,199,0.35)] hover:-translate-y-1.5 cursor-pointer bg-ink"
                 >
-                  <div
-                    className={`absolute inset-0 transition-colors duration-500 ${
-                      p.dark
-                        ? "bg-cream/0 group-hover:bg-cream/10"
-                        : "bg-ink/0 group-hover:bg-ink/10"
-                    }`}
-                  />
+                  {/* Real Project Visual Image */}
+                  {p.image && (
+                    <Image
+                      src={p.image}
+                      alt={p.name}
+                      fill
+                      sizes="(max-width: 1024px) 90vw, 45vw"
+                      className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+                      quality={85}
+                    />
+                  )}
+
+                  {/* Gradient overlay to ensure text contrast and premium feel */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/55 to-ink/25 group-hover:from-ink/90 group-hover:via-ink/40 transition-colors duration-500" />
 
                   {/* Top card bar */}
                   <div className="relative z-10 flex items-center justify-between">
-                    <span
-                      className={`inline-block font-body text-xs font-medium px-3 py-1 rounded-full backdrop-blur-md border ${
-                        p.dark
-                          ? "bg-cream/15 text-cream border-cream/20"
-                          : "bg-ink/10 text-ink border-ink/15"
-                      }`}
-                    >
+                    <span className="inline-block font-body text-xs font-medium px-3 py-1 rounded-full backdrop-blur-md border bg-cream/15 text-cream border-cream/20 shadow-sm">
                       {p.tag}
                     </span>
                     <div className="flex items-center gap-2">
-                      <span
-                        className={`text-xs font-body font-medium opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline ${
-                          p.dark ? "text-cream/80" : "text-ink/80"
-                        }`}
-                      >
+                      <span className="text-xs font-body font-medium text-cream/90 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline">
                         View details ↗
                       </span>
-                      <span
-                        className={`font-mono text-xs font-semibold ${
-                          p.dark ? "text-cream/50" : "text-ink/40"
-                        }`}
-                      >
+                      <span className="font-mono text-xs font-semibold text-cream/60">
                         0{i + 1}
                       </span>
                     </div>
@@ -122,18 +115,10 @@ export default function Work() {
 
                   {/* Bottom title info */}
                   <div className="relative z-10">
-                    <h3
-                      className={`font-display font-extrabold text-2xl sm:text-3xl md:text-4xl tracking-tight leading-[1.05] mb-2 ${
-                        p.dark ? "text-cream" : "text-ink"
-                      }`}
-                    >
+                    <h3 className="font-display font-extrabold text-2xl sm:text-3xl md:text-4xl text-cream tracking-tight leading-[1.05] mb-2">
                       {p.name}
                     </h3>
-                    <p
-                      className={`font-body text-xs sm:text-sm line-clamp-2 max-w-lg ${
-                        p.dark ? "text-cream/80" : "text-ink/80"
-                      }`}
-                    >
+                    <p className="font-body text-xs sm:text-sm text-cream/80 line-clamp-2 max-w-lg">
                       {p.blurb}
                     </p>
                   </div>
@@ -184,6 +169,20 @@ export default function Work() {
                   </svg>
                 </button>
               </div>
+
+              {/* Project Preview Screenshot in Modal */}
+              {activeProject.image && (
+                <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden mb-6 border border-ink/10 shadow-sm bg-ink/5">
+                  <Image
+                    src={activeProject.image}
+                    alt={activeProject.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 600px"
+                    className="object-cover object-top"
+                    quality={85}
+                  />
+                </div>
+              )}
 
               {/* Description */}
               <p className="font-body text-sm sm:text-base text-ink/80 leading-relaxed mb-6">
@@ -251,4 +250,3 @@ export default function Work() {
     </>
   );
 }
-

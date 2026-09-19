@@ -4,6 +4,7 @@ export type Project = {
   blurb: string;
   color: string;
   dark: boolean;
+  image: string;
   year?: string;
   link?: string;
   stack?: string[];
@@ -12,11 +13,36 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    name: "Dreams Event Management",
-    tag: "Event production",
-    blurb: "An immersive brand experience and consultation scheduler built for grand wedding celebrations and corporate events across Kerala.",
-    color: "var(--color-violet)",
+    name: "Framify Digital Marketing",
+    tag: "Digital growth agency",
+    blurb: "A high-conversion, dynamic marketing agency website built to showcase paid acquisition, creative campaigns, and brand scaling systems.",
+    color: "#0f172a",
     dark: true,
+    image: "/images/works/framify.png",
+    year: "2026",
+    link: "https://framifydigital.vercel.app/",
+    stack: ["Next.js", "React", "Tailwind CSS", "Framer Motion"],
+    deliverables: ["Agency Landing Page", "Case Study Framework", "Lead Capture Funnel"],
+  },
+  {
+    name: "Sharingan Collectibles",
+    tag: "Anime & art toys retail",
+    blurb: "A premium, dark-mode hype-drop storefront for anime figures, vinyl art toys, and limited runs with interactive catalog loading.",
+    color: "#18141f",
+    dark: true,
+    image: "/images/works/sharingan.png",
+    year: "2026",
+    link: "https://protoplae-collectibles.vercel.app/",
+    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Stripe", "Framer Motion"],
+    deliverables: ["Hype-Drop Engine", "E-Commerce Architecture", "Micro-Interactions"],
+  },
+  {
+    name: "Dreams Event Management",
+    tag: "Event production & decor",
+    blurb: "An immersive brand experience and consultation scheduler built for grand wedding celebrations and corporate events across Kerala.",
+    color: "#1a1622",
+    dark: true,
+    image: "/images/works/dreams-events.png",
     year: "2026",
     link: "https://dreams-events.vercel.app/",
     stack: ["Next.js", "Tailwind CSS", "Framer Motion", "Theme Switcher"],
@@ -24,10 +50,11 @@ export const projects: Project[] = [
   },
   {
     name: "Mind Art Designs",
-    tag: "Architecture & spatial design",
+    tag: "Architecture & modern homes",
     blurb: "A luxury modernist architectural showcase and spatial design portfolio highlighting curved concrete residences, lakeside villas, and bespoke interiors.",
-    color: "var(--color-sky)",
-    dark: false,
+    color: "#2a2622",
+    dark: true,
+    image: "/images/works/mindart.png",
     year: "2026",
     link: "https://mindart-designs.vercel.app/",
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
@@ -35,47 +62,15 @@ export const projects: Project[] = [
   },
   {
     name: "Zeus Tattoos",
-    tag: "Tattoo & body art",
+    tag: "Tattoo & body art collective",
     blurb: "A luxury brand identity and premium user experience designed for Kottayam's premier body art collective with dynamic portfolio exploration.",
-    color: "var(--color-ink)",
+    color: "#141416",
     dark: true,
+    image: "/images/works/zeus-tattoos.jpg",
     year: "2026",
     link: "https://zeus-tattoo.vercel.app/",
     stack: ["Next.js", "Tailwind CSS", "Framer Motion", "Lenis"],
     deliverables: ["Visual Hierarchy", "Artist Portfolio System", "Appointment Booking Flow"],
-  },
-  {
-    name: "Sharingan Collectibles",
-    tag: "Anime & art toys retail",
-    blurb: "A premium, dark-mode hype-drop storefront for anime figures, vinyl art toys, and limited runs with interactive catalog loading.",
-    color: "var(--color-violet)",
-    dark: true,
-    year: "2026",
-    link: "https://protoplae-collectibles.vercel.app/",
-    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Stripe", "Framer Motion"],
-    deliverables: ["Hype-Drop Engine", "E-Commerce Architecture", "Micro-Interactions"],
-  },
-  {
-    name: "Framify Digital Marketing",
-    tag: "Digital growth agency",
-    blurb: "A high-conversion, dynamic marketing agency website built to showcase paid acquisition, creative campaigns, and brand scaling strategies.",
-    color: "var(--color-lilac)",
-    dark: false,
-    year: "2026",
-    link: "https://framifydigital.vercel.app/",
-    stack: ["Next.js", "React", "Tailwind CSS", "Framer Motion"],
-    deliverables: ["Agency Landing Page", "Case Study Framework", "Lead Capture Funnel"],
-  },
-  {
-    name: "Elite Group Caters & Events",
-    tag: "Luxury catering & events",
-    blurb: "An opulent, gastronomy-focused digital platform and booking portal crafted for bespoke catering and high-end event banquets.",
-    color: "var(--color-sky)",
-    dark: false,
-    year: "2026",
-    link: "https://elite-catering-psi.vercel.app/",
-    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
-    deliverables: ["Menu Architecture", "Catering Calculator", "VIP Event Booking"],
   },
 ];
 
