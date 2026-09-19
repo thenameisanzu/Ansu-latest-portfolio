@@ -342,12 +342,12 @@ export default function Contact() {
           </motion.h3>
         </div>
 
-        {/* Dual-Track Flowing Filmstrip Marquee (Pure Visual, Non-clickable, Seamless) */}
+        {/* Dual-Track Flowing Filmstrip Marquee (Pure Visual, Non-clickable, Seamless Infinite Loop) */}
         <div className="relative w-full flex flex-col gap-4 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)] py-2">
           {/* Row 1: Flowing Left */}
           <div className="flex overflow-hidden">
             <div className="animate-marquee-track flex gap-4 shrink-0">
-              {row1Photos.concat(row1Photos).map((photo, i) => (
+              {[...row1Photos, ...row1Photos, ...row1Photos, ...row1Photos].map((photo, i) => (
                 <div
                   key={`r1_${photo.src}_${i}`}
                   className="relative w-52 sm:w-64 md:w-80 h-36 sm:h-44 md:h-52 rounded-2xl md:rounded-3xl overflow-hidden bg-ink/5 border border-ink/10 shrink-0 shadow-sm"
@@ -358,6 +358,7 @@ export default function Contact() {
                     fill
                     sizes="(max-width: 768px) 260px, 340px"
                     className="object-cover"
+                    quality={80}
                   />
                 </div>
               ))}
@@ -367,7 +368,7 @@ export default function Contact() {
           {/* Row 2: Flowing Right */}
           <div className="flex overflow-hidden">
             <div className="animate-marquee-track-reverse flex gap-4 shrink-0">
-              {row2Photos.concat(row2Photos).map((photo, i) => (
+              {[...row2Photos, ...row2Photos, ...row2Photos, ...row2Photos].map((photo, i) => (
                 <div
                   key={`r2_${photo.src}_${i}`}
                   className="relative w-52 sm:w-64 md:w-80 h-36 sm:h-44 md:h-52 rounded-2xl md:rounded-3xl overflow-hidden bg-ink/5 border border-ink/10 shrink-0 shadow-sm"
@@ -378,6 +379,7 @@ export default function Contact() {
                     fill
                     sizes="(max-width: 768px) 260px, 340px"
                     className="object-cover"
+                    quality={80}
                   />
                 </div>
               ))}
