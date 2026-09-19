@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import Magnetic from "./Magnetic";
 import { socials, email, formattedPhoneNumber, whatsappLink } from "@/lib/content";
 import { SocialIcon } from "@/components/SocialIcons";
-import { Send, Check, ChevronLeft, ChevronRight, Sparkles, MessageSquare, ArrowUpRight } from "lucide-react";
+import MailSlider from "@/components/MailSlider";
+import PhoneSlider from "@/components/PhoneSlider";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 
 // Curated Behind The Scenes placeholder items
 const btsSlides = [
@@ -41,14 +44,6 @@ const btsSlides = [
   },
 ];
 
-const serviceOptions = [
-  "Landing Page",
-  "Full-Stack Web App",
-  "E-Commerce",
-  "3D / Interactive Site",
-  "Other",
-];
-
 const socialHoverColors: Record<string, string> = {
   GitHub: "hover:text-violet hover:border-violet/40 hover:bg-violet/10",
   LinkedIn: "hover:text-sky-600 hover:border-sky/40 hover:bg-sky/10",
@@ -57,13 +52,6 @@ const socialHoverColors: Record<string, string> = {
 };
 
 export default function Contact() {
-  // Form State
-  const [name, setName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [selectedService, setSelectedService] = useState(serviceOptions[0]);
-  const [message, setMessage] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
   // Slideshow State
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -86,22 +74,6 @@ export default function Contact() {
     setCurrentSlide((prev) => (prev - 1 + slideCount) % slideCount);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-
-    const subject = encodeURIComponent(`Project Inquiry: ${selectedService} — ${name}`);
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${userEmail}\nService: ${selectedService}\n\nMessage:\n${message}`
-    );
-
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 4000);
-  };
-
   return (
     <section
       id="contact"
@@ -119,7 +91,7 @@ export default function Contact() {
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="flex flex-col items-start mb-12 md:mb-16">
+        <div className="flex flex-col items-start mb-10 md:mb-14">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -145,147 +117,102 @@ export default function Contact() {
         </div>
 
         {/* Split-View Grid Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
-          {/* Left Column: Contact Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-6 flex flex-col justify-between p-6 sm:p-8 md:p-9 rounded-3xl bg-cream/90 md:bg-cream/70 border border-ink/[0.09] shadow-[0_8px_30px_rgba(32,28,38,0.03)] backdrop-blur-xl"
-          >
-            <div>
-              <div className="flex items-center justify-between gap-2 mb-6 pb-4 border-b border-ink/8">
-                <span className="font-display font-bold text-lg sm:text-xl text-ink">
-                  Send a Direct Message
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+          {/* Left Column: Email & WhatsApp Interactive Sliders */}
+          <div className="lg:col-span-6 flex flex-col gap-4 sm:gap-5 justify-between">
+            {/* 1. Email Channel Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative flex flex-col justify-between p-5 sm:p-6 md:p-7 rounded-3xl bg-cream/90 md:bg-cream/70 border border-ink/[0.09] shadow-[0_8px_28px_rgba(32,28,38,0.03)] backdrop-blur-xl hover:border-violet/35 hover:shadow-[0_14px_36px_rgba(155,142,199,0.14)] transition-all duration-300 text-left flex-1"
+            >
+              {/* Top Card Meta */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-body font-semibold text-violet bg-violet/10 border border-violet/20 px-2.5 py-0.5 rounded-full">
+                  <span>✉</span>
+                  <span>EMAIL</span>
                 </span>
-                <span className="text-xs font-body font-medium text-emerald-700 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                  Replies &lt; 24h
+                <span className="text-[11px] font-body font-medium text-ink-soft/70">
+                  Replies in &lt; 24h
                 </span>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-                {/* Name & Email Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block font-body text-xs font-semibold text-ink-soft mb-1.5">
-                      Your Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Jane Doe"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-cream/80 border border-ink/12 text-ink placeholder:text-ink-soft/40 text-sm focus:outline-none focus:border-violet focus:ring-2 focus:ring-violet/20 transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-body text-xs font-semibold text-ink-soft mb-1.5">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="jane@example.com"
-                      value={userEmail}
-                      onChange={(e) => setUserEmail(e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-cream/80 border border-ink/12 text-ink placeholder:text-ink-soft/40 text-sm focus:outline-none focus:border-violet focus:ring-2 focus:ring-violet/20 transition-all"
-                    />
-                  </div>
-                </div>
+              {/* Value Display */}
+              <div className="my-2 flex flex-col items-center text-center">
+                <Magnetic>
+                  <a
+                    href={`mailto:${email}?subject=Project%20Inquiry%20—%20Ansu%20V%20S`}
+                    data-cursor="hover"
+                    className="block w-full font-display font-extrabold text-ink text-lg sm:text-xl md:text-[1.3rem] lg:text-[1.45rem] tracking-tight hover:text-violet transition-colors py-1 truncate"
+                    title={`Email ${email}`}
+                  >
+                    {email}
+                  </a>
+                </Magnetic>
+              </div>
 
-                {/* Service Selection Pills */}
-                <div>
-                  <label className="block font-body text-xs font-semibold text-ink-soft mb-2">
-                    Project Interest
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {serviceOptions.map((opt) => (
-                      <button
-                        key={opt}
-                        type="button"
-                        onClick={() => setSelectedService(opt)}
-                        className={`font-body text-xs font-medium px-3 py-1.5 rounded-full border transition-all duration-200 cursor-pointer ${
-                          selectedService === opt
-                            ? "bg-ink text-cream border-ink shadow-xs"
-                            : "bg-cream/60 text-ink/75 border-ink/10 hover:border-ink/25"
-                        }`}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              {/* Interactive Slider */}
+              <div className="mt-2 w-full">
+                <MailSlider />
+              </div>
+            </motion.div>
 
-                {/* Message Field */}
-                <div>
-                  <label className="block font-body text-xs font-semibold text-ink-soft mb-1.5">
-                    Your Message / Goals
-                  </label>
-                  <textarea
-                    required
-                    rows={4}
-                    placeholder="Tell me about your project, timeline, or key objectives..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl bg-cream/80 border border-ink/12 text-ink placeholder:text-ink-soft/40 text-sm focus:outline-none focus:border-violet focus:ring-2 focus:ring-violet/20 transition-all resize-none"
-                  />
-                </div>
+            {/* 2. Direct Call / WhatsApp Channel Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative flex flex-col justify-between p-5 sm:p-6 md:p-7 rounded-3xl bg-cream/90 md:bg-cream/70 border border-ink/[0.09] shadow-[0_8px_28px_rgba(32,28,38,0.03)] backdrop-blur-xl hover:border-emerald-500/35 hover:shadow-[0_14px_36px_rgba(37,211,102,0.12)] transition-all duration-300 text-left flex-1"
+            >
+              {/* Top Card Meta */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-body font-semibold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-600" />
+                  </span>
+                  <span>DIRECT &amp; WHATSAPP</span>
+                </span>
+                <span className="text-[11px] font-body font-medium text-emerald-700/80">
+                  Fastest response
+                </span>
+              </div>
 
-                {/* Submit Action */}
-                <button
-                  type="submit"
-                  data-cursor="hover"
-                  disabled={submitted}
-                  className="w-full py-3.5 px-6 rounded-2xl bg-ink text-cream font-body text-sm font-semibold hover:bg-violet hover:shadow-[0_8px_25px_rgba(155,142,199,0.35)] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  {submitted ? (
-                    <>
-                      <Check className="w-4 h-4 text-emerald-400" />
-                      <span>Opening Mail Client...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Send Project Request</span>
-                      <Send className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                    </>
-                  )}
-                </button>
-              </form>
-            </div>
+              {/* Value Display */}
+              <div className="my-2 flex flex-col items-center text-center">
+                <Magnetic>
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-cursor="hover"
+                    className="block w-full font-display font-extrabold text-ink text-lg sm:text-xl md:text-[1.3rem] lg:text-[1.45rem] tracking-tight hover:text-emerald-600 transition-colors py-1 whitespace-nowrap"
+                    title="Chat on WhatsApp"
+                  >
+                    {formattedPhoneNumber}
+                  </a>
+                </Magnetic>
+              </div>
 
-            {/* Direct Channel Quick Links */}
-            <div className="pt-6 mt-6 border-t border-ink/8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <a
-                href={`mailto:${email}`}
-                data-cursor="hover"
-                className="text-ink-soft hover:text-ink flex items-center gap-1.5 font-medium transition-colors"
-              >
-                <span>✉ {email}</span>
-              </a>
-              <a
-                href={whatsappLink}
-                target="_blank"
-                rel="noreferrer"
-                data-cursor="hover"
-                className="text-emerald-700 hover:text-emerald-800 flex items-center gap-1.5 font-medium transition-colors"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>WhatsApp: {formattedPhoneNumber}</span>
-              </a>
-            </div>
-          </motion.div>
+              {/* Interactive Slider */}
+              <div className="mt-2 w-full">
+                <PhoneSlider />
+              </div>
+            </motion.div>
+          </div>
 
           {/* Right Column: Behind The Scenes Slideshow Carousel */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="lg:col-span-6 relative flex flex-col justify-between rounded-3xl overflow-hidden bg-ink text-cream border border-ink/10 shadow-[0_12px_40px_rgba(32,28,38,0.15)] min-h-[420px] sm:min-h-[480px] p-6 sm:p-8"
+            className="lg:col-span-6 relative flex flex-col justify-between rounded-3xl overflow-hidden bg-ink text-cream border border-ink/10 shadow-[0_12px_40px_rgba(32,28,38,0.15)] min-h-[440px] sm:min-h-[480px] p-6 sm:p-8"
           >
             {/* Background Image Slideshow with Crossfade */}
             <AnimatePresence mode="wait">
