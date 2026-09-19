@@ -8,7 +8,7 @@ import { socials, email, formattedPhoneNumber, whatsappLink } from "@/lib/conten
 import { SocialIcon } from "@/components/SocialIcons";
 import MailSlider from "@/components/MailSlider";
 import PhoneSlider from "@/components/PhoneSlider";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, Mail, MessageCircle, Copy, Check, ArrowUpRight } from "lucide-react";
 
 // Curated Behind The Scenes placeholder items
 const btsSlides = [
@@ -52,6 +52,10 @@ const socialHoverColors: Record<string, string> = {
 };
 
 export default function Contact() {
+  // Channel Tab State (0: Email, 1: WhatsApp / Phone)
+  const [activeTab, setActiveTab] = useState<"email" | "whatsapp">("email");
+  const [copied, setCopied] = useState(false);
+
   // Slideshow State
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -72,6 +76,12 @@ export default function Contact() {
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slideCount) % slideCount);
+  };
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -118,91 +128,182 @@ export default function Contact() {
 
         {/* Split-View Grid Container */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-          {/* Left Column: Email & WhatsApp Interactive Sliders */}
-          <div className="lg:col-span-6 flex flex-col gap-4 sm:gap-5 justify-between">
-            {/* 1. Email Channel Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative flex flex-col justify-between p-5 sm:p-6 md:p-7 rounded-3xl bg-cream/90 md:bg-cream/70 border border-ink/[0.09] shadow-[0_8px_28px_rgba(32,28,38,0.03)] backdrop-blur-xl hover:border-violet/35 hover:shadow-[0_14px_36px_rgba(155,142,199,0.14)] transition-all duration-300 text-left flex-1"
-            >
-              {/* Top Card Meta */}
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-body font-semibold text-violet bg-violet/10 border border-violet/20 px-2.5 py-0.5 rounded-full">
-                  <span>✉</span>
-                  <span>EMAIL</span>
-                </span>
-                <span className="text-[11px] font-body font-medium text-ink-soft/70">
-                  Replies in &lt; 24h
-                </span>
+          {/* Left Column: Studio Slider Console */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-6 relative flex flex-col justify-between p-6 sm:p-8 md:p-9 rounded-3xl bg-cream/90 md:bg-cream/70 border border-ink/[0.09] shadow-[0_8px_28px_rgba(32,28,38,0.03)] backdrop-blur-xl min-h-[440px] sm:min-h-[480px]"
+          >
+            {/* Top Bar: Segmented Channel Selector */}
+            <div className="flex items-center justify-between gap-3 pb-5 border-b border-ink/8">
+              <div className="inline-flex p-1 rounded-full bg-ink/5 border border-ink/8">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("email")}
+                  className={`relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold transition-colors duration-200 cursor-pointer ${
+                    activeTab === "email" ? "text-cream" : "text-ink/70 hover:text-ink"
+                  }`}
+                >
+                  {activeTab === "email" && (
+                    <motion.span
+                      layoutId="contactTabIndicator"
+                      className="absolute inset-0 rounded-full bg-ink"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <Mail className="w-3.5 h-3.5 relative z-10" />
+                  <span className="relative z-10">Email</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("whatsapp")}
+                  className={`relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold transition-colors duration-200 cursor-pointer ${
+                    activeTab === "whatsapp" ? "text-cream" : "text-ink/70 hover:text-ink"
+                  }`}
+                >
+                  {activeTab === "whatsapp" && (
+                    <motion.span
+                      layoutId="contactTabIndicator"
+                      className="absolute inset-0 rounded-full bg-emerald-600"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <MessageCircle className="w-3.5 h-3.5 relative z-10" />
+                  <span className="relative z-10">WhatsApp</span>
+                </button>
               </div>
 
-              {/* Value Display */}
-              <div className="my-2 flex flex-col items-center text-center">
-                <Magnetic>
-                  <a
-                    href={`mailto:${email}?subject=Project%20Inquiry%20—%20Ansu%20V%20S`}
-                    data-cursor="hover"
-                    className="block w-full font-display font-extrabold text-ink text-lg sm:text-xl md:text-[1.3rem] lg:text-[1.45rem] tracking-tight hover:text-violet transition-colors py-1 truncate"
-                    title={`Email ${email}`}
+              {/* Status Pill */}
+              <span className="font-mono text-[11px] font-medium text-ink-soft/80 hidden sm:inline-block">
+                {activeTab === "email" ? "Replies in < 24h" : "Fastest response"}
+              </span>
+            </div>
+
+            {/* Middle: Active Channel Value & Magnetic Typography */}
+            <div className="my-auto py-8 sm:py-10">
+              <AnimatePresence mode="wait">
+                {activeTab === "email" ? (
+                  <motion.div
+                    key="emailTab"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col items-start gap-4"
                   >
-                    {email}
-                  </a>
-                </Magnetic>
-              </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-violet animate-pulse" />
+                      <span className="font-body text-xs font-semibold uppercase tracking-wider text-violet">
+                        Direct Email
+                      </span>
+                    </div>
 
-              {/* Interactive Slider */}
-              <div className="mt-2 w-full">
-                <MailSlider />
-              </div>
-            </motion.div>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <Magnetic>
+                        <a
+                          href={`mailto:${email}?subject=Project%20Inquiry%20—%20Ansu%20V%20S`}
+                          data-cursor="hover"
+                          className="font-display font-extrabold text-ink text-2xl sm:text-3xl md:text-[2rem] lg:text-[2.25rem] tracking-tight hover:text-violet transition-colors leading-none"
+                          title={`Email ${email}`}
+                        >
+                          {email}
+                        </a>
+                      </Magnetic>
 
-            {/* 2. Direct Call / WhatsApp Channel Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative flex flex-col justify-between p-5 sm:p-6 md:p-7 rounded-3xl bg-cream/90 md:bg-cream/70 border border-ink/[0.09] shadow-[0_8px_28px_rgba(32,28,38,0.03)] backdrop-blur-xl hover:border-emerald-500/35 hover:shadow-[0_14px_36px_rgba(37,211,102,0.12)] transition-all duration-300 text-left flex-1"
-            >
-              {/* Top Card Meta */}
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-body font-semibold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-600" />
-                  </span>
-                  <span>DIRECT &amp; WHATSAPP</span>
-                </span>
-                <span className="text-[11px] font-body font-medium text-emerald-700/80">
-                  Fastest response
-                </span>
-              </div>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(email)}
+                        data-cursor="hover"
+                        className="p-2 rounded-full border border-ink/10 hover:border-ink/25 hover:bg-ink/5 text-ink/70 hover:text-ink transition-all cursor-pointer"
+                        title="Copy email"
+                      >
+                        {copied ? (
+                          <Check className="w-4 h-4 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
 
-              {/* Value Display */}
-              <div className="my-2 flex flex-col items-center text-center">
-                <Magnetic>
-                  <a
-                    href={whatsappLink}
-                    target="_blank"
-                    rel="noreferrer"
-                    data-cursor="hover"
-                    className="block w-full font-display font-extrabold text-ink text-lg sm:text-xl md:text-[1.3rem] lg:text-[1.45rem] tracking-tight hover:text-emerald-600 transition-colors py-1 whitespace-nowrap"
-                    title="Chat on WhatsApp"
+                    <p className="font-body text-xs sm:text-sm text-ink-soft leading-relaxed max-w-md">
+                      Best for detailed project briefs, RFP proposals, technical inquiries, and consultation calls.
+                    </p>
+
+                    {/* Interactive Mail Slider */}
+                    <div className="mt-4 w-full">
+                      <MailSlider />
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="whatsappTab"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col items-start gap-4"
                   >
-                    {formattedPhoneNumber}
-                  </a>
-                </Magnetic>
-              </div>
+                    <div className="flex items-center gap-2">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
+                      </span>
+                      <span className="font-body text-xs font-semibold uppercase tracking-wider text-emerald-700">
+                        WhatsApp &amp; Direct Call
+                      </span>
+                    </div>
 
-              {/* Interactive Slider */}
-              <div className="mt-2 w-full">
-                <PhoneSlider />
-              </div>
-            </motion.div>
-          </div>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <Magnetic>
+                        <a
+                          href={whatsappLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          data-cursor="hover"
+                          className="font-display font-extrabold text-ink text-2xl sm:text-3xl md:text-[2rem] lg:text-[2.25rem] tracking-tight hover:text-emerald-600 transition-colors leading-none"
+                          title="Chat on WhatsApp"
+                        >
+                          {formattedPhoneNumber}
+                        </a>
+                      </Magnetic>
+
+                      <button
+                        type="button"
+                        onClick={() => handleCopy("+919747904381")}
+                        data-cursor="hover"
+                        className="p-2 rounded-full border border-ink/10 hover:border-ink/25 hover:bg-ink/5 text-ink/70 hover:text-ink transition-all cursor-pointer"
+                        title="Copy phone number"
+                      >
+                        {copied ? (
+                          <Check className="w-4 h-4 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+
+                    <p className="font-body text-xs sm:text-sm text-ink-soft leading-relaxed max-w-md">
+                      Fastest response for urgent client sprint deadlines, quick voice notes, and live discussions.
+                    </p>
+
+                    {/* Interactive Phone Slider */}
+                    <div className="mt-4 w-full">
+                      <PhoneSlider />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Bottom Bar: Quick Channel Info */}
+            <div className="pt-4 border-t border-ink/8 flex items-center justify-between text-xs text-ink-soft/80">
+              <span>Timezone: IST (GMT+5:30)</span>
+              <span>Kerala, India</span>
+            </div>
+          </motion.div>
 
           {/* Right Column: Behind The Scenes Slideshow Carousel */}
           <motion.div
