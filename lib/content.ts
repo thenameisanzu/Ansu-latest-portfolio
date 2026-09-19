@@ -90,27 +90,35 @@ export type Service = {
 export const services: Service[] = [
   {
     number: "01",
-    title: "Art Direction & UI/UX",
+    title: "High-Converting Landing Pages",
     description:
-      "Crafting distinctive, high-end digital aesthetics in Figma that make brands feel expensive and memorable.",
-    points: ["Design Systems", "High-Fidelity Wireframes", "Interactive Prototypes", "Brand Identity"],
+      "Crafting ultra-fast, visually striking landing pages with conversion-focused UX, persuasive storytelling, and cinematic micro-interactions.",
+    points: ["Conversion Optimization", "Core Web Vitals 99+", "Figma to Code", "A/B Testing Ready"],
     accentColor: "var(--color-violet)",
   },
   {
     number: "02",
-    title: "Full-Stack Web Engineering",
+    title: "Custom Full-Stack Web Apps (MERN / Next.js)",
     description:
-      "Building lightning-fast, production-grade web applications with modern frameworks and robust API architectures.",
-    points: ["Next.js & React", "TypeScript & Node.js", "Headless CMS (Sanity)", "Performance & SEO"],
+      "Engineering scalable, production-ready web platforms with modern full-stack architectures, secure authentication, real-time databases, and robust APIs.",
+    points: ["Next.js & MERN Stack", "REST & GraphQL APIs", "PostgreSQL & MongoDB", "Cloud Deployment"],
     accentColor: "var(--color-sky)",
   },
   {
     number: "03",
-    title: "Cinematic Motion & WebGL",
+    title: "E-Commerce Solutions (Shopify & Custom)",
     description:
-      "Transforming static websites into alive, immersive digital stories using buttery-smooth GSAP and 3D animations.",
-    points: ["Scroll-Triggered Sequences", "Custom Cursors & Physics", "Micro-Interactions", "Fluid Layouts"],
+      "Designing high-performing online storefronts with seamless checkout flows, custom Shopify themes, and bespoke headless commerce builds.",
+    points: ["Shopify & Liquid", "Headless Commerce", "Stripe Integration", "Mobile-First UX"],
     accentColor: "var(--color-lilac)",
+  },
+  {
+    number: "04",
+    title: "Interactive & 3D Websites",
+    description:
+      "Creating immersive, award-winning digital experiences using WebGL, Three.js shaders, buttery-smooth GSAP scroll sequences, and interactive physics.",
+    points: ["Three.js & WebGL", "GSAP ScrollTrigger", "Shader Effects", "Creative Interactions"],
+    accentColor: "var(--color-violet)",
   },
 ];
 
