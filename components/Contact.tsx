@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import Magnetic from "./Magnetic";
 import { socials, email, formattedPhoneNumber, whatsappLink } from "@/lib/content";
 import { SocialIcon } from "@/components/SocialIcons";
-import { ChevronLeft, ChevronRight, Sparkles, Copy, Check, ArrowUpRight } from "lucide-react";
+import MailSlider from "@/components/MailSlider";
+import PhoneSlider from "@/components/PhoneSlider";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 
 // Curated Behind The Scenes placeholder items
 const btsSlides = [
@@ -41,46 +44,6 @@ const btsSlides = [
   },
 ];
 
-// Contact Channels Data for Single Swipeable Card
-const contactChannels = [
-  {
-    id: "email",
-    type: "EMAIL",
-    label: "Email Channel",
-    statusPill: "Replies in < 24h",
-    accentColor: "var(--color-violet)",
-    value: email,
-    ctaText: "Open Mail Client",
-    ctaLink: `mailto:${email}?subject=Project%20Inquiry%20—%20Ansu%20V%20S`,
-    icon: "✉",
-  },
-  {
-    id: "call",
-    type: "DIRECT CALL",
-    label: "Phone Line",
-    statusPill: "Mon–Sat 9AM–8PM IST",
-    accentColor: "var(--color-sky)",
-    value: formattedPhoneNumber,
-    rawCopyValue: "+919747904381",
-    ctaText: "Call Direct",
-    ctaLink: "tel:+919747904381",
-    icon: "📞",
-  },
-  {
-    id: "whatsapp",
-    type: "WHATSAPP",
-    label: "Instant Chat",
-    statusPill: "Fastest response",
-    accentColor: "#22c55e",
-    value: formattedPhoneNumber,
-    rawCopyValue: "+919747904381",
-    ctaText: "Chat on WhatsApp",
-    ctaLink: whatsappLink,
-    icon: "💬",
-    isLive: true,
-  },
-];
-
 const socialHoverColors: Record<string, string> = {
   GitHub: "hover:text-violet hover:border-violet/40 hover:bg-violet/10",
   LinkedIn: "hover:text-sky-600 hover:border-sky/40 hover:bg-sky/10",
@@ -89,52 +52,27 @@ const socialHoverColors: Record<string, string> = {
 };
 
 export default function Contact() {
-  // Contact Card Slider State (User-controlled only, no auto-advance)
-  const [contactSlide, setContactSlide] = useState(0);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const totalContactSlides = contactChannels.length;
+  // Slideshow State
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const slideCount = btsSlides.length;
 
-  // Behind The Scenes Slideshow State (Auto-play enabled with pause on hover)
-  const [btsSlide, setBtsSlide] = useState(0);
-  const [isBtsPaused, setIsBtsPaused] = useState(false);
-  const totalBtsSlides = btsSlides.length;
-
-  // Auto-play for Behind The Scenes only
+  // Auto-play slideshow timer
   useEffect(() => {
-    if (isBtsPaused) return;
+    if (isPaused) return;
     const interval = setInterval(() => {
-      setBtsSlide((prev) => (prev + 1) % totalBtsSlides);
+      setCurrentSlide((prev) => (prev + 1) % slideCount);
     }, 4500);
     return () => clearInterval(interval);
-  }, [isBtsPaused, totalBtsSlides]);
+  }, [isPaused, slideCount]);
 
-  // Contact Navigation Handlers
-  const nextContact = () => {
-    setContactSlide((prev) => (prev + 1) % totalContactSlides);
-  };
-  const prevContact = () => {
-    setContactSlide((prev) => (prev - 1 + totalContactSlides) % totalContactSlides);
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slideCount);
   };
 
-  // Drag Gesture for Mobile Contact Card
-  const handleContactDragEnd = (_: unknown, info: PanInfo) => {
-    if (info.offset.x < -40) {
-      nextContact();
-    } else if (info.offset.x > 40) {
-      prevContact();
-    }
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slideCount) % slideCount);
   };
-
-  // Copy to Clipboard Handler
-  const handleCopy = (val: string, id: string) => {
-    navigator.clipboard.writeText(val);
-    setCopiedId(id);
-    setTimeout(() => {
-      setCopiedId(null);
-    }, 2000);
-  };
-
-  const currentContact = contactChannels[contactSlide];
 
   return (
     <section
@@ -180,145 +118,91 @@ export default function Contact() {
 
         {/* Split-View Grid Container */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-          {/* Left Column: Single Minimal Swipeable Contact Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.18}
-            onDragEnd={handleContactDragEnd}
-            className="lg:col-span-6 relative flex flex-col justify-between rounded-3xl bg-cream/70 md:bg-cream/50 backdrop-blur-xl border border-ink/10 shadow-xs min-h-[440px] sm:min-h-[480px] p-6 sm:p-8 select-none cursor-grab active:cursor-grabbing"
-          >
-            {/* Top Bar: Channel Meta & Status Pill */}
-            <div className="relative z-10 flex items-center justify-between gap-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink/5 border border-ink/10 backdrop-blur-md">
-                <span className="text-xs">{currentContact.icon}</span>
-                <span className="font-mono text-xs font-semibold uppercase tracking-wider text-ink">
-                  {currentContact.type}
+          {/* Left Column: Email & WhatsApp Interactive Sliders */}
+          <div className="lg:col-span-6 flex flex-col gap-4 sm:gap-5 justify-between">
+            {/* 1. Email Channel Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative flex flex-col justify-between p-5 sm:p-6 md:p-7 rounded-3xl bg-cream/90 md:bg-cream/70 border border-ink/[0.09] shadow-[0_8px_28px_rgba(32,28,38,0.03)] backdrop-blur-xl hover:border-violet/35 hover:shadow-[0_14px_36px_rgba(155,142,199,0.14)] transition-all duration-300 text-left flex-1"
+            >
+              {/* Top Card Meta */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-body font-semibold text-violet bg-violet/10 border border-violet/20 px-2.5 py-0.5 rounded-full">
+                  <span>✉</span>
+                  <span>EMAIL</span>
+                </span>
+                <span className="text-[11px] font-body font-medium text-ink-soft/70">
+                  Replies in &lt; 24h
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-ink/5 border border-ink/10 text-xs font-body font-medium text-ink-soft">
-                {currentContact.isLive && (
+              {/* Value Display */}
+              <div className="my-2 flex flex-col items-center text-center">
+                <Magnetic>
+                  <a
+                    href={`mailto:${email}?subject=Project%20Inquiry%20—%20Ansu%20V%20S`}
+                    data-cursor="hover"
+                    className="block w-full font-display font-extrabold text-ink text-lg sm:text-xl md:text-[1.3rem] lg:text-[1.45rem] tracking-tight hover:text-violet transition-colors py-1 truncate"
+                    title={`Email ${email}`}
+                  >
+                    {email}
+                  </a>
+                </Magnetic>
+              </div>
+
+              {/* Interactive Slider */}
+              <div className="mt-2 w-full">
+                <MailSlider />
+              </div>
+            </motion.div>
+
+            {/* 2. Direct Call / WhatsApp Channel Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative flex flex-col justify-between p-5 sm:p-6 md:p-7 rounded-3xl bg-cream/90 md:bg-cream/70 border border-ink/[0.09] shadow-[0_8px_28px_rgba(32,28,38,0.03)] backdrop-blur-xl hover:border-emerald-500/35 hover:shadow-[0_14px_36px_rgba(37,211,102,0.12)] transition-all duration-300 text-left flex-1"
+            >
+              {/* Top Card Meta */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-body font-semibold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
                   <span className="relative flex h-1.5 w-1.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-600" />
                   </span>
-                )}
-                <span>{currentContact.statusPill}</span>
-              </div>
-            </div>
-
-            {/* Middle: Large Value & Ghost Copy Action */}
-            <div className="relative z-10 py-10 sm:py-14">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentContact.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex flex-col items-start gap-4"
-                >
-                  <span className="font-body text-xs font-semibold uppercase tracking-wider text-ink-soft/70">
-                    {currentContact.label}
-                  </span>
-
-                  <div className="flex items-center gap-3 w-full flex-wrap">
-                    <a
-                      href={currentContact.ctaLink}
-                      target={currentContact.id === "whatsapp" ? "_blank" : undefined}
-                      rel={currentContact.id === "whatsapp" ? "noreferrer" : undefined}
-                      data-cursor="hover"
-                      className="font-display font-extrabold text-2xl sm:text-3xl md:text-[2rem] lg:text-[2.25rem] text-ink tracking-tight hover:text-violet transition-colors leading-none"
-                    >
-                      {currentContact.value}
-                    </a>
-
-                    {/* Small Ghost Copy Icon Button */}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleCopy(
-                          currentContact.rawCopyValue || currentContact.value,
-                          currentContact.id
-                        )
-                      }
-                      data-cursor="hover"
-                      aria-label={`Copy ${currentContact.type}`}
-                      className="p-2 rounded-full border border-ink/12 hover:border-ink/30 hover:bg-ink/5 text-ink/70 hover:text-ink transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 active:scale-90"
-                      title="Copy to clipboard"
-                    >
-                      {copiedId === currentContact.id ? (
-                        <Check className="w-4 h-4 text-emerald-600" />
-                      ) : (
-                        <Copy className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Primary CTA Button */}
-                  <div className="pt-4 w-full">
-                    <a
-                      href={currentContact.ctaLink}
-                      target={currentContact.id === "whatsapp" ? "_blank" : undefined}
-                      rel={currentContact.id === "whatsapp" ? "noreferrer" : undefined}
-                      data-cursor="hover"
-                      className="group inline-flex items-center justify-between gap-3 px-6 py-3 rounded-2xl bg-ink text-cream font-body text-sm font-semibold hover:bg-violet hover:shadow-[0_8px_25px_rgba(155,142,199,0.35)] active:scale-[0.98] transition-all duration-300 w-full sm:w-auto"
-                    >
-                      <span>{currentContact.ctaText}</span>
-                      <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </a>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Bottom Bar: Matching Dot Indicators & Navigation Arrows */}
-            <div className="relative z-10 flex items-center justify-between gap-4 pt-4 border-t border-ink/10">
-              {/* Dot Indicators */}
-              <div className="flex items-center gap-1.5">
-                {contactChannels.map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => setContactSlide(i)}
-                    aria-label={`Go to channel slide ${i + 1}`}
-                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                      contactSlide === i
-                        ? "w-7 bg-ink"
-                        : "w-2 bg-ink/20 hover:bg-ink/40"
-                    }`}
-                  />
-                ))}
+                  <span>DIRECT &amp; WHATSAPP</span>
+                </span>
+                <span className="text-[11px] font-body font-medium text-emerald-700/80">
+                  Fastest response
+                </span>
               </div>
 
-              {/* Arrow Nav Buttons */}
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={prevContact}
-                  data-cursor="hover"
-                  aria-label="Previous contact channel"
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-ink/5 hover:bg-ink hover:text-cream text-ink border border-ink/15 backdrop-blur-md flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={nextContact}
-                  data-cursor="hover"
-                  aria-label="Next contact channel"
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-ink/5 hover:bg-ink hover:text-cream text-ink border border-ink/15 backdrop-blur-md flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
+              {/* Value Display */}
+              <div className="my-2 flex flex-col items-center text-center">
+                <Magnetic>
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-cursor="hover"
+                    className="block w-full font-display font-extrabold text-ink text-lg sm:text-xl md:text-[1.3rem] lg:text-[1.45rem] tracking-tight hover:text-emerald-600 transition-colors py-1 whitespace-nowrap"
+                    title="Chat on WhatsApp"
+                  >
+                    {formattedPhoneNumber}
+                  </a>
+                </Magnetic>
               </div>
-            </div>
-          </motion.div>
+
+              {/* Interactive Slider */}
+              <div className="mt-2 w-full">
+                <PhoneSlider />
+              </div>
+            </motion.div>
+          </div>
 
           {/* Right Column: Behind The Scenes Slideshow Carousel */}
           <motion.div
@@ -326,14 +210,14 @@ export default function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            onMouseEnter={() => setIsBtsPaused(true)}
-            onMouseLeave={() => setIsBtsPaused(false)}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
             className="lg:col-span-6 relative flex flex-col justify-between rounded-3xl overflow-hidden bg-ink text-cream border border-ink/10 shadow-[0_12px_40px_rgba(32,28,38,0.15)] min-h-[440px] sm:min-h-[480px] p-6 sm:p-8"
           >
             {/* Background Image Slideshow with Crossfade */}
             <AnimatePresence mode="wait">
               <motion.div
-                key={btsSlide}
+                key={currentSlide}
                 initial={{ opacity: 0, scale: 1.05 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
@@ -341,12 +225,12 @@ export default function Contact() {
                 className="absolute inset-0 z-0"
               >
                 <Image
-                  src={btsSlides[btsSlide].src}
-                  alt={btsSlides[btsSlide].title}
+                  src={btsSlides[currentSlide].src}
+                  alt={btsSlides[currentSlide].title}
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover opacity-45"
-                  priority={btsSlide === 0}
+                  priority={currentSlide === 0}
                 />
                 {/* Gradient Overlays for Readability */}
                 <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/30" />
@@ -363,7 +247,7 @@ export default function Contact() {
               </div>
 
               <span className="font-mono text-xs text-cream/75 font-semibold bg-ink/50 px-2.5 py-1 rounded-full backdrop-blur-md border border-white/10">
-                0{btsSlide + 1} / 0{totalBtsSlides}
+                0{currentSlide + 1} / 0{slideCount}
               </span>
             </div>
 
@@ -371,7 +255,7 @@ export default function Contact() {
             <div className="relative z-10 pt-16 sm:pt-24">
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={btsSlide}
+                  key={currentSlide}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -12 }}
@@ -379,13 +263,13 @@ export default function Contact() {
                   className="mb-5"
                 >
                   <span className="font-body text-xs font-semibold uppercase tracking-wider text-[#86efac] block mb-1.5">
-                    {btsSlides[btsSlide].tag}
+                    {btsSlides[currentSlide].tag}
                   </span>
                   <h3 className="font-display font-bold text-xl sm:text-2xl md:text-3xl text-cream tracking-tight mb-2">
-                    {btsSlides[btsSlide].title}
+                    {btsSlides[currentSlide].title}
                   </h3>
                   <p className="font-body text-xs sm:text-sm text-cream/80 leading-relaxed max-w-md line-clamp-2">
-                    {btsSlides[btsSlide].caption}
+                    {btsSlides[currentSlide].caption}
                   </p>
                 </motion.div>
               </AnimatePresence>
@@ -398,10 +282,10 @@ export default function Contact() {
                     <button
                       key={i}
                       type="button"
-                      onClick={() => setBtsSlide(i)}
+                      onClick={() => setCurrentSlide(i)}
                       aria-label={`Go to slide ${i + 1}`}
                       className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                        btsSlide === i
+                        currentSlide === i
                           ? "w-7 bg-cream"
                           : "w-2 bg-cream/30 hover:bg-cream/60"
                       }`}
@@ -413,9 +297,7 @@ export default function Contact() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() =>
-                      setBtsSlide((prev) => (prev - 1 + totalBtsSlides) % totalBtsSlides)
-                    }
+                    onClick={prevSlide}
                     data-cursor="hover"
                     aria-label="Previous slide"
                     className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-cream/15 hover:bg-cream hover:text-ink text-cream border border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
@@ -424,9 +306,7 @@ export default function Contact() {
                   </button>
                   <button
                     type="button"
-                    onClick={() =>
-                      setBtsSlide((prev) => (prev + 1) % totalBtsSlides)
-                    }
+                    onClick={nextSlide}
                     data-cursor="hover"
                     aria-label="Next slide"
                     className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-cream/15 hover:bg-cream hover:text-ink text-cream border border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
