@@ -11,7 +11,6 @@ import PhoneSlider from "@/components/PhoneSlider";
 import {
   Sparkles,
   Mail,
-  MessageCircle,
   Copy,
   Check,
 } from "lucide-react";
@@ -179,7 +178,7 @@ export default function Contact() {
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
-                <MessageCircle className="w-3.5 h-3.5 relative z-10" />
+                <SocialIcon name="whatsapp" size={13} className="relative z-10 shrink-0" />
                 <span className="relative z-10">WhatsApp</span>
               </button>
             </div>
