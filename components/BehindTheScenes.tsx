@@ -328,11 +328,11 @@ function GalleryScene({
     }));
   }, [depthRange, spatialPositions, totalImages, visibleCount]);
 
-  // Handle scroll input
+  // Handle scroll input - gentle, smooth pacing
   const handleWheel = useCallback(
     (event: WheelEvent) => {
       event.preventDefault();
-      setScrollVelocity((prev) => prev + event.deltaY * 0.008 * speed);
+      setScrollVelocity((prev) => prev + event.deltaY * 0.0018 * speed);
       setAutoPlay(false);
       lastInteraction.current = Date.now();
     },
@@ -343,11 +343,11 @@ function GalleryScene({
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
-        setScrollVelocity((prev) => prev - 2 * speed);
+        setScrollVelocity((prev) => prev - 0.6 * speed);
         setAutoPlay(false);
         lastInteraction.current = Date.now();
       } else if (event.key === "ArrowDown" || event.key === "ArrowRight") {
-        setScrollVelocity((prev) => prev + 2 * speed);
+        setScrollVelocity((prev) => prev + 0.6 * speed);
         setAutoPlay(false);
         lastInteraction.current = Date.now();
       }
@@ -370,10 +370,10 @@ function GalleryScene({
     }
   }, [handleWheel, handleKeyDown]);
 
-  // Auto-play logic
+  // Auto-play logic - very gentle ambient drift
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Date.now() - lastInteraction.current > 3000) {
+      if (Date.now() - lastInteraction.current > 3500) {
         setAutoPlay(true);
       }
     }, 1000);
@@ -381,15 +381,15 @@ function GalleryScene({
   }, []);
 
   useFrame((state, delta) => {
-    // Merge external scroll trigger velocity
+    // Merge external scroll trigger velocity with a cap for smooth readability
     const combinedVel = scrollVelocity + globalScrollVelocity.value;
-    globalScrollVelocity.value *= 0.85;
+    globalScrollVelocity.value *= 0.88;
 
     if (autoPlay) {
-      setScrollVelocity((prev) => prev + 0.3 * delta);
+      setScrollVelocity((prev) => prev + 0.06 * delta);
     }
 
-    setScrollVelocity((prev) => prev * 0.94);
+    setScrollVelocity((prev) => prev * 0.92);
 
     const time = state.clock.getElapsedTime();
     materials.forEach((material) => {
@@ -403,8 +403,11 @@ function GalleryScene({
       totalImages > 0 ? visibleCount % totalImages || totalImages : 0;
     const totalRange = depthRange;
 
+    // Clamp effective velocity so items never fly past too fast to see
+    const clampedVel = Math.max(-2.5, Math.min(2.5, combinedVel));
+
     planesData.current.forEach((plane, i) => {
-      let newZ = plane.z + combinedVel * delta * 10;
+      let newZ = plane.z + clampedVel * delta * 3.2;
       let wrapsForward = 0;
       let wrapsBackward = 0;
 
@@ -616,15 +619,18 @@ export default function BehindTheScenes() {
       const st = ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        end: "+=120%",
+        end: "+=150%",
         pin: true,
         scrub: 1.2,
         anticipatePin: 1,
         onUpdate: (self) => {
-          // Drive velocity forward/backward as the user scrolls
-          const vel = self.getVelocity() * 0.003;
-          if (Math.abs(vel) > 0.05) {
-            globalScrollVelocity.value += vel;
+          // Drive velocity smoothly as the user scrolls, scaled down to keep images easily visible
+          const vel = self.getVelocity() * 0.00035;
+          if (Math.abs(vel) > 0.01) {
+            globalScrollVelocity.value = Math.max(
+              -2.0,
+              Math.min(2.0, globalScrollVelocity.value + vel)
+            );
           }
         },
       });
