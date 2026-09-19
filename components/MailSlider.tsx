@@ -47,19 +47,24 @@ export default function MailSlider() {
     window.location.href = `mailto:${email}?subject=Project%20Inquiry%20—%20Ansu%20V%20S`;
   };
 
-  const handleDragEnd = (_: unknown, info: { offset: { x: number } }) => {
-    const threshold = 65;
-    if (info.offset.x >= threshold) {
+  const handleDragEnd = (_: unknown, info: { offset?: { x: number } }) => {
+    const threshold = 45;
+    const currentX = x.get();
+    const offsetX = info?.offset?.x ?? 0;
+    if (currentX >= threshold || offsetX >= threshold) {
       triggerCopy();
-    } else if (info.offset.x <= -threshold) {
+    } else if (currentX <= -threshold || offsetX <= -threshold) {
       triggerMail();
     }
   };
 
   return (
-    <div className="flex flex-col items-center gap-3 w-full max-w-sm mx-auto select-none mt-2">
+    <div className="flex flex-col items-center gap-3 w-full max-w-sm mx-auto select-none mt-2 touch-none">
       {/* iOS Slider Bar */}
-      <div className="relative w-full h-14 rounded-full bg-ink/8 border border-ink/15 backdrop-blur-md p-1.5 flex items-center justify-between overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]">
+      <div
+        style={{ touchAction: "none" }}
+        className="relative w-full h-14 rounded-full bg-ink/8 border border-ink/15 backdrop-blur-md p-1.5 flex items-center justify-between overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] touch-none"
+      >
         {/* Left Track Ambient Fill (Lilac/Violet) */}
         <motion.div
           style={{ opacity: leftTrackFill }}
@@ -75,7 +80,7 @@ export default function MailSlider() {
         {/* Left Track Zone: Open Mail */}
         <button
           onClick={triggerMail}
-          className="relative z-10 flex-1 h-full flex items-center justify-start pl-3.5 gap-1.5 text-xs font-body font-medium transition-colors text-ink hover:text-violet text-left group"
+          className="relative z-10 flex-1 h-full flex items-center justify-start pl-3.5 gap-1.5 text-xs font-body font-medium transition-colors text-ink hover:text-violet text-left group touch-manipulation"
           data-cursor="hover"
           title="Click or slide left to open mail app"
         >
@@ -100,7 +105,7 @@ export default function MailSlider() {
         {/* Right Track Zone: Copy Email */}
         <button
           onClick={triggerCopy}
-          className="relative z-10 flex-1 h-full flex items-center justify-end pr-3.5 gap-1.5 text-xs font-body font-medium transition-colors text-ink hover:text-sky-600 text-right group"
+          className="relative z-10 flex-1 h-full flex items-center justify-end pr-3.5 gap-1.5 text-xs font-body font-medium transition-colors text-ink hover:text-sky-600 text-right group touch-manipulation"
           data-cursor="hover"
           title="Click or slide right to copy address"
         >
@@ -128,11 +133,12 @@ export default function MailSlider() {
           dragConstraints={{ left: -95, right: 95 }}
           dragElastic={0.12}
           dragSnapToOrigin={true}
+          dragMomentum={false}
           onDragEnd={handleDragEnd}
-          style={{ x, backgroundColor: knobBg }}
+          style={{ x, backgroundColor: knobBg, touchAction: "none" }}
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute left-1/2 -translate-x-1/2 z-20 w-11 h-11 rounded-full text-cream flex items-center justify-center cursor-grab active:cursor-grabbing shadow-[0_4px_14px_rgba(32,28,38,0.25)] border border-white/25 overflow-hidden"
+          className="absolute left-1/2 -translate-x-1/2 z-20 w-11 h-11 rounded-full text-cream flex items-center justify-center cursor-grab active:cursor-grabbing shadow-[0_4px_14px_rgba(32,28,38,0.25)] border border-white/25 overflow-hidden touch-none select-none"
           data-cursor="hover"
         >
           <AnimatePresence mode="wait">
