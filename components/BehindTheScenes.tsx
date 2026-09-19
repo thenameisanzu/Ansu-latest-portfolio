@@ -685,18 +685,18 @@ export default function BehindTheScenes() {
           ref={containerRef}
           className="relative w-full rounded-3xl overflow-hidden bg-transparent"
         >
-          {/* Ambient Title watermark */}
-          <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center select-none overflow-hidden">
-            <span className="font-serif italic font-normal text-[15vw] md:text-[12vw] text-ink/5 tracking-tight whitespace-nowrap leading-none select-none">
-              Behind the Code
-            </span>
-          </div>
-
           {/* Interactive WebGL Scene */}
           <InfiniteGalleryCanvas
             images={btsWorkItems}
             className="w-full h-[420px] sm:h-[500px] md:h-[580px] cursor-grab active:cursor-grabbing"
           />
+
+          {/* Transparent Title Overlay (Floats above the 3D canvas) */}
+          <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center select-none overflow-hidden">
+            <span className="font-serif italic font-normal text-[15vw] md:text-[12vw] text-ink/10 tracking-tight whitespace-nowrap leading-none select-none">
+              Behind the Code
+            </span>
+          </div>
 
           {/* Bottom Interactive Hint Banner - Seamless Borderless Style */}
           <div className="relative z-10 py-3 px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
