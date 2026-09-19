@@ -9,38 +9,38 @@ export default function MailSlider() {
   const x = useMotionValue(0);
 
   // Dynamic opacity and scales for morphing icons
-  const dualIconOpacity = useTransform(x, [-20, -10, 0, 10, 20], [0, 0.4, 1, 0.4, 0]);
-  const leftDragIconOpacity = useTransform(x, [-60, -16, 0], [1, 0.6, 0]);
-  const leftDragIconScale = useTransform(x, [-60, -16, 0], [1.15, 0.9, 0.6]);
-  const rightDragIconOpacity = useTransform(x, [0, 16, 60], [0, 0.6, 1]);
-  const rightDragIconScale = useTransform(x, [0, 16, 60], [0.6, 0.9, 1.15]);
+  const dualIconOpacity = useTransform(x, [-20, -10, 0, 10, 20], [0, 0.3, 1, 0.3, 0]);
+  const leftDragIconOpacity = useTransform(x, [-50, -14, 0], [1, 0.7, 0]);
+  const leftDragIconScale = useTransform(x, [-50, -14, 0], [1.1, 0.9, 0.6]);
+  const rightDragIconOpacity = useTransform(x, [0, 14, 50], [0, 0.7, 1]);
+  const rightDragIconScale = useTransform(x, [0, 14, 50], [0.6, 0.9, 1.1]);
 
-  const leftTrackFill = useTransform(x, [-72, 0], [1, 0]);
-  const rightTrackFill = useTransform(x, [0, 72], [0, 1]);
+  const leftTrackFill = useTransform(x, [-70, 0], [1, 0]);
+  const rightTrackFill = useTransform(x, [0, 70], [0, 1]);
   const knobBg = useTransform(
     x,
-    [-70, -32, 0, 32, 70],
+    [-65, -28, 0, 28, 65],
     [
-      "rgb(155, 142, 199)", // violet on left drag
+      "rgb(155, 142, 199)", // violet
       "rgb(189, 166, 206)",
       "rgb(32, 28, 38)",    // ink default
       "rgb(189, 166, 206)",
-      "rgb(180, 211, 217)", // sky on right drag
+      "rgb(180, 211, 217)", // sky
     ]
   );
 
   const triggerCopy = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(email);
-      if (typeof navigator.vibrate === "function") navigator.vibrate(40);
+      if (typeof navigator.vibrate === "function") navigator.vibrate(30);
       setStatus("copied");
-      setTimeout(() => setStatus("idle"), 2800);
+      setTimeout(() => setStatus("idle"), 2600);
     }
   };
 
   const triggerMail = () => {
     if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-      navigator.vibrate(40);
+      navigator.vibrate(30);
     }
     setStatus("mailed");
     setTimeout(() => setStatus("idle"), 2400);
@@ -48,7 +48,7 @@ export default function MailSlider() {
   };
 
   const handleDragEnd = (_: unknown, info: { offset?: { x: number } }) => {
-    const threshold = 36;
+    const threshold = 32;
     const currentX = x.get();
     const offsetX = info?.offset?.x ?? 0;
     if (currentX >= threshold || offsetX >= threshold) {
@@ -59,86 +59,88 @@ export default function MailSlider() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2.5 w-full max-w-sm mx-auto select-none mt-2 touch-none">
-      {/* iOS Slider Bar */}
+    <div className="flex flex-col items-center gap-2 w-full max-w-[340px] sm:max-w-[360px] mx-auto select-none touch-none">
+      {/* Sleek iOS-style Slider Bar */}
       <div
         style={{ touchAction: "none" }}
-        className="relative w-full h-13 sm:h-14 rounded-full bg-ink/8 border border-ink/15 backdrop-blur-md p-1 sm:p-1.5 flex items-center justify-between overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] touch-none"
+        className="relative w-full h-12 sm:h-13 rounded-full bg-ink/[0.04] border border-ink/[0.09] backdrop-blur-md p-1 flex items-center justify-between overflow-hidden shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] touch-none"
       >
-        {/* Left Track Ambient Fill (Lilac/Violet) */}
+        {/* Left Track Fill Gradient */}
         <motion.div
           style={{ opacity: leftTrackFill }}
-          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-violet/25 to-transparent rounded-l-full"
+          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-violet/20 to-transparent rounded-l-full"
         />
 
-        {/* Right Track Ambient Fill (Sky) */}
+        {/* Right Track Fill Gradient */}
         <motion.div
           style={{ opacity: rightTrackFill }}
-          className="pointer-events-none absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-sky/35 to-transparent rounded-r-full"
+          className="pointer-events-none absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-sky/30 to-transparent rounded-r-full"
         />
 
-        {/* Left Track Zone: Open Mail */}
+        {/* Left Track Action: Direct Mail */}
         <button
+          type="button"
           onClick={triggerMail}
-          className="relative z-10 flex-1 h-full flex items-center justify-start pl-2 sm:pl-3.5 gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-body font-medium transition-colors text-ink hover:text-violet text-left group touch-manipulation cursor-pointer"
+          className="relative z-10 flex-1 h-full flex items-center justify-start pl-2 sm:pl-3 gap-1.5 text-xs font-body font-semibold transition-colors text-ink/80 hover:text-violet group touch-manipulation cursor-pointer"
           data-cursor="hover"
-          title="Click or slide left to open mail app"
+          title="Click or drag left to open mail"
         >
           <motion.span
             style={{
-              opacity: useTransform(x, [-70, -18, 0], [1, 0.9, 0.75]),
-              scale: useTransform(x, [-70, 0], [1.05, 1]),
+              opacity: useTransform(x, [-65, -15, 0], [1, 0.9, 0.75]),
+              scale: useTransform(x, [-65, 0], [1.04, 1]),
             }}
-            className="flex items-center gap-1 sm:gap-1.5 text-ink font-semibold"
+            className="flex items-center gap-1.5"
           >
-            <span className="text-xs sm:text-sm text-violet transition-transform group-hover:-translate-x-0.5">←</span>
-            <span className="p-0.5 sm:p-1 rounded-full bg-violet/15 text-violet flex items-center justify-center shrink-0">
+            <span className="text-xs text-violet font-bold transition-transform group-hover:-translate-x-0.5">←</span>
+            <span className="p-1 rounded-full bg-violet/10 text-violet flex items-center justify-center shrink-0">
               <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <rect width="20" height="16" x="2" y="4" rx="2"/>
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
               </svg>
             </span>
-            <span className="truncate group-hover:text-violet transition-colors">Direct Mail</span>
+            <span className="text-[11px] sm:text-xs tracking-tight">Open Mail</span>
           </motion.span>
         </button>
 
-        {/* Right Track Zone: Copy Email */}
+        {/* Right Track Action: Copy Address */}
         <button
+          type="button"
           onClick={triggerCopy}
-          className="relative z-10 flex-1 h-full flex items-center justify-end pr-2 sm:pr-3.5 gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-body font-medium transition-colors text-ink hover:text-sky-600 text-right group touch-manipulation cursor-pointer"
+          className="relative z-10 flex-1 h-full flex items-center justify-end pr-2 sm:pr-3 gap-1.5 text-xs font-body font-semibold transition-colors text-ink/80 hover:text-sky-700 group touch-manipulation cursor-pointer"
           data-cursor="hover"
-          title="Click or slide right to copy address"
+          title="Click or drag right to copy email"
         >
           <motion.span
             style={{
-              opacity: useTransform(x, [0, 18, 70], [0.75, 0.9, 1]),
-              scale: useTransform(x, [0, 70], [1, 1.05]),
+              opacity: useTransform(x, [0, 15, 65], [0.75, 0.9, 1]),
+              scale: useTransform(x, [0, 65], [1, 1.04]),
             }}
-            className="flex items-center gap-1 sm:gap-1.5 text-ink font-semibold"
+            className="flex items-center gap-1.5"
           >
-            <span className="truncate group-hover:text-sky-600 transition-colors">Copy Email</span>
-            <span className="p-0.5 sm:p-1 rounded-full bg-sky/35 text-ink flex items-center justify-center shrink-0">
+            <span className="text-[11px] sm:text-xs tracking-tight">Copy</span>
+            <span className="p-1 rounded-full bg-sky/30 text-ink flex items-center justify-center shrink-0">
               <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
                 <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
               </svg>
             </span>
-            <span className="text-xs sm:text-sm text-sky-600 transition-transform group-hover:translate-x-0.5">→</span>
+            <span className="text-xs text-sky-700 font-bold transition-transform group-hover:translate-x-0.5">→</span>
           </motion.span>
         </button>
 
-        {/* Interactive Draggable Center Knob with Direction-Morphing Icons */}
+        {/* Tactile Center Knob */}
         <motion.div
           drag="x"
-          dragConstraints={{ left: -72, right: 72 }}
-          dragElastic={0.12}
+          dragConstraints={{ left: -68, right: 68 }}
+          dragElastic={0.1}
           dragSnapToOrigin={true}
           dragMomentum={false}
           onDragEnd={handleDragEnd}
           style={{ x, backgroundColor: knobBg, touchAction: "none" }}
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.95 }}
-          className="absolute left-1/2 -translate-x-1/2 z-20 w-10.5 h-10.5 sm:w-11 sm:h-11 rounded-full text-cream flex items-center justify-center cursor-grab active:cursor-grabbing shadow-[0_4px_14px_rgba(32,28,38,0.25)] border border-white/25 overflow-hidden touch-none select-none"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.96 }}
+          className="absolute left-1/2 -translate-x-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full text-cream flex items-center justify-center cursor-grab active:cursor-grabbing shadow-[0_3px_12px_rgba(32,28,38,0.22)] border border-white/20 overflow-hidden touch-none select-none"
           data-cursor="hover"
         >
           <AnimatePresence mode="wait">
@@ -148,7 +150,7 @@ export default function MailSlider() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
-                className="text-base font-bold text-sky"
+                className="text-sm font-bold text-sky"
               >
                 ✓
               </motion.span>
@@ -164,13 +166,13 @@ export default function MailSlider() {
               </motion.span>
             ) : (
               <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
-                {/* 1. Bidirectional Idle Icon (Shown at Center) */}
+                {/* Idle Bidirectional Glyphs */}
                 <motion.div
                   style={{ opacity: dualIconOpacity }}
                   className="absolute flex items-center justify-center gap-0.5 text-cream"
                 >
                   <svg
-                    className="w-3.5 h-3.5 text-cream/70"
+                    className="w-3 h-3 text-cream/75"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -182,7 +184,7 @@ export default function MailSlider() {
                   </svg>
                   <span className="w-1 h-1 rounded-full bg-cream/80" />
                   <svg
-                    className="w-3.5 h-3.5 text-cream/70"
+                    className="w-3 h-3 text-cream/75"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -194,7 +196,7 @@ export default function MailSlider() {
                   </svg>
                 </motion.div>
 
-                {/* 2. Dragging Left Icon (Morphs to Left Arrow / Mail) */}
+                {/* Morphing Left Indicator */}
                 <motion.div
                   style={{
                     opacity: leftDragIconOpacity,
@@ -203,11 +205,11 @@ export default function MailSlider() {
                   className="absolute flex items-center justify-center text-cream"
                 >
                   <svg
-                    className="w-4 h-4 text-cream"
+                    className="w-3.5 h-3.5 text-cream"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2.4"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
@@ -216,7 +218,7 @@ export default function MailSlider() {
                   </svg>
                 </motion.div>
 
-                {/* 3. Dragging Right Icon (Morphs to Right Arrow / Copy) */}
+                {/* Morphing Right Indicator */}
                 <motion.div
                   style={{
                     opacity: rightDragIconOpacity,
@@ -225,11 +227,11 @@ export default function MailSlider() {
                   className="absolute flex items-center justify-center text-cream"
                 >
                   <svg
-                    className="w-4 h-4 text-cream"
+                    className="w-3.5 h-3.5 text-cream"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2.4"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
@@ -243,32 +245,33 @@ export default function MailSlider() {
         </motion.div>
       </div>
 
-      {/* Dynamic status feedback or instruction */}
-      <div className="h-6 flex items-center justify-center">
+      {/* Minimal Helper / Feedback */}
+      <div className="h-5 flex items-center justify-center">
         {status === "copied" ? (
           <motion.span
-            initial={{ opacity: 0, y: 4 }}
+            initial={{ opacity: 0, y: 3 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-xs font-body font-semibold text-violet flex items-center gap-1.5"
+            className="text-[11px] font-body font-semibold text-violet flex items-center gap-1"
           >
-            <span>Copied to clipboard!</span>
+            <span>Email copied to clipboard!</span>
             <span>✦</span>
           </motion.span>
         ) : status === "mailed" ? (
           <motion.span
-            initial={{ opacity: 0, y: 4 }}
+            initial={{ opacity: 0, y: 3 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-xs font-body font-semibold text-violet flex items-center gap-1.5"
+            className="text-[11px] font-body font-semibold text-violet flex items-center gap-1"
           >
-            <span>Opening default mail client...</span>
+            <span>Opening email client...</span>
             <span>↗</span>
           </motion.span>
         ) : (
-          <span className="text-[11px] font-body text-ink-soft/70">
-            Slide right to copy • Slide left to open mail
+          <span className="text-[11px] font-body text-ink-soft/60 tracking-tight">
+            Swipe or tap to email or copy
           </span>
         )}
       </div>
     </div>
   );
 }
+
