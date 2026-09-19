@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Magnetic from "./Magnetic";
@@ -14,10 +14,6 @@ import {
   MessageCircle,
   Copy,
   Check,
-  Maximize2,
-  ChevronLeft,
-  ChevronRight,
-  X,
 } from "lucide-react";
 
 // Behind The Scenes photography & studio moments
@@ -91,55 +87,6 @@ export default function Contact() {
   // Channel Tab State (0: Email, 1: WhatsApp / Phone)
   const [activeTab, setActiveTab] = useState<"email" | "whatsapp">("email");
   const [copied, setCopied] = useState(false);
-
-  // Fullscreen Lightbox State
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-
-  const openLightbox = (index: number) => {
-    setLightboxIndex(index);
-  };
-
-  const closeLightbox = () => {
-    setLightboxIndex(null);
-  };
-
-  const prevLightbox = () => {
-    if (lightboxIndex === null) return;
-    setLightboxIndex((prev) =>
-      prev === null ? 0 : (prev - 1 + btsPhotos.length) % btsPhotos.length
-    );
-  };
-
-  const nextLightbox = () => {
-    if (lightboxIndex === null) return;
-    setLightboxIndex((prev) =>
-      prev === null ? 0 : (prev + 1) % btsPhotos.length
-    );
-  };
-
-  // Lightbox keyboard navigation
-  useEffect(() => {
-    if (lightboxIndex === null) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") nextLightbox();
-      if (e.key === "ArrowLeft") prevLightbox();
-      if (e.key === "Escape") closeLightbox();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxIndex]);
-
-  // Lock body scroll when lightbox is active
-  useEffect(() => {
-    if (lightboxIndex !== null) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [lightboxIndex]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -367,227 +314,80 @@ export default function Contact() {
         </motion.div>
       </div>
 
-      {/* Behind The Scenes (Edge-to-Edge Freeform Marquee Slideshow - Placed Just Above Footer) */}
-      <div className="mt-16 md:mt-24 w-full relative z-10">
-        {/* Section Title & Hint */}
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-10 mb-5 flex items-center justify-between flex-wrap gap-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink/5 border border-ink/10">
+      {/* Behind The Scenes (Prominent Heading & Continuous Automatic Filmstrip Marquee) */}
+      <div className="mt-20 md:mt-32 w-full relative z-10">
+        {/* Large Prominent Section Heading */}
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-10 mb-8 md:mb-12 flex flex-col items-center text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink/5 border border-ink/10 mb-3"
+          >
             <Sparkles className="w-3.5 h-3.5 text-violet" />
-            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-ink">
-              Behind The Scenes
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-ink-soft">
+              Studio Moments
             </span>
-          </div>
+          </motion.div>
 
-          <div className="flex items-center gap-3 text-xs text-ink-soft/75">
-            <span className="hidden sm:inline-block font-body text-[11px] sm:text-xs">
-              Hover to pause • Click to expand
-            </span>
-            <button
-              type="button"
-              onClick={() => openLightbox(0)}
-              data-cursor="hover"
-              className="font-body text-[11px] font-medium text-ink hover:text-violet transition-colors cursor-pointer inline-flex items-center gap-1 bg-ink/5 px-2.5 py-1 rounded-full border border-ink/10"
-            >
-              <Maximize2 className="w-3 h-3" />
-              <span>Fullscreen Gallery</span>
-            </button>
-          </div>
+          <motion.h3
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+            className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-ink"
+          >
+            Behind The Scenes
+          </motion.h3>
         </div>
 
-        {/* Dual-Track Flowing Filmstrip Marquee (No Card Containment) */}
-        <div className="group relative w-full flex flex-col gap-3.5 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)] py-2">
+        {/* Dual-Track Flowing Filmstrip Marquee (Pure Visual, Non-clickable, Seamless) */}
+        <div className="relative w-full flex flex-col gap-4 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)] py-2">
           {/* Row 1: Flowing Left */}
-          <div className="flex overflow-hidden group-hover:[animation-play-state:paused]">
-            <div className="animate-marquee-track flex gap-3.5 shrink-0 group-hover:[animation-play-state:paused]">
-              {row1Photos.concat(row1Photos).map((photo, i) => {
-                const originalIndex = btsPhotos.findIndex((p) => p.src === photo.src);
-                return (
-                  <button
-                    key={`r1_${photo.src}_${i}`}
-                    type="button"
-                    onClick={() => openLightbox(originalIndex >= 0 ? originalIndex : 0)}
-                    data-cursor="hover"
-                    aria-label="View photo"
-                    className="group/card relative w-48 sm:w-60 md:w-72 h-32 sm:h-40 md:h-48 rounded-2xl md:rounded-3xl overflow-hidden bg-ink/5 border border-ink/10 shrink-0 shadow-sm transition-all duration-300 hover:scale-105 hover:border-violet/40 hover:shadow-xl cursor-pointer"
-                  >
-                    <Image
-                      src={photo.src}
-                      alt={photo.alt}
-                      fill
-                      sizes="(max-width: 768px) 240px, 320px"
-                      className="object-cover transition-transform duration-500 group-hover/card:scale-110"
-                    />
-                    {/* Hover Overlay Icon */}
-                    <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center">
-                      <div className="p-2.5 rounded-full bg-cream/90 text-ink shadow-md backdrop-blur-md">
-                        <Maximize2 className="w-4 h-4" />
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
+          <div className="flex overflow-hidden">
+            <div className="animate-marquee-track flex gap-4 shrink-0">
+              {row1Photos.concat(row1Photos).map((photo, i) => (
+                <div
+                  key={`r1_${photo.src}_${i}`}
+                  className="relative w-52 sm:w-64 md:w-80 h-36 sm:h-44 md:h-52 rounded-2xl md:rounded-3xl overflow-hidden bg-ink/5 border border-ink/10 shrink-0 shadow-sm"
+                >
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt}
+                    fill
+                    sizes="(max-width: 768px) 260px, 340px"
+                    className="object-cover"
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Row 2: Flowing Right */}
-          <div className="flex overflow-hidden group-hover:[animation-play-state:paused]">
-            <div className="animate-marquee-track-reverse flex gap-3.5 shrink-0 group-hover:[animation-play-state:paused]">
-              {row2Photos.concat(row2Photos).map((photo, i) => {
-                const originalIndex = btsPhotos.findIndex((p) => p.src === photo.src);
-                return (
-                  <button
-                    key={`r2_${photo.src}_${i}`}
-                    type="button"
-                    onClick={() => openLightbox(originalIndex >= 0 ? originalIndex : 0)}
-                    data-cursor="hover"
-                    aria-label="View photo"
-                    className="group/card relative w-48 sm:w-60 md:w-72 h-32 sm:h-40 md:h-48 rounded-2xl md:rounded-3xl overflow-hidden bg-ink/5 border border-ink/10 shrink-0 shadow-sm transition-all duration-300 hover:scale-105 hover:border-violet/40 hover:shadow-xl cursor-pointer"
-                  >
-                    <Image
-                      src={photo.src}
-                      alt={photo.alt}
-                      fill
-                      sizes="(max-width: 768px) 240px, 320px"
-                      className="object-cover transition-transform duration-500 group-hover/card:scale-110"
-                    />
-                    {/* Hover Overlay Icon */}
-                    <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center">
-                      <div className="p-2.5 rounded-full bg-cream/90 text-ink shadow-md backdrop-blur-md">
-                        <Maximize2 className="w-4 h-4" />
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
+          <div className="flex overflow-hidden">
+            <div className="animate-marquee-track-reverse flex gap-4 shrink-0">
+              {row2Photos.concat(row2Photos).map((photo, i) => (
+                <div
+                  key={`r2_${photo.src}_${i}`}
+                  className="relative w-52 sm:w-64 md:w-80 h-36 sm:h-44 md:h-52 rounded-2xl md:rounded-3xl overflow-hidden bg-ink/5 border border-ink/10 shrink-0 shadow-sm"
+                >
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt}
+                    fill
+                    sizes="(max-width: 768px) 260px, 340px"
+                    className="object-cover"
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Fullscreen Lightbox Modal */}
-      <AnimatePresence>
-        {lightboxIndex !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            onClick={closeLightbox}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-between p-4 sm:p-8 bg-ink/95 backdrop-blur-2xl text-cream"
-          >
-            {/* Lightbox Top Bar */}
-            <div
-              className="w-full max-w-6xl flex items-center justify-between z-10 pt-2"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cream/10 border border-cream/15 text-cream">
-                <Sparkles className="w-3.5 h-3.5 text-lilac" />
-                <span className="font-mono text-xs font-semibold uppercase tracking-wider">
-                  Behind The Scenes
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span className="font-mono text-xs text-cream/80 bg-cream/10 px-3 py-1.5 rounded-full border border-cream/15">
-                  {String(lightboxIndex + 1).padStart(2, "0")} / {String(btsPhotos.length).padStart(2, "0")}
-                </span>
-
-                <button
-                  type="button"
-                  onClick={closeLightbox}
-                  data-cursor="hover"
-                  aria-label="Close Lightbox"
-                  className="p-2.5 rounded-full bg-cream/15 hover:bg-cream/30 text-cream border border-cream/20 transition-all cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Main Fullscreen Stage */}
-            <div
-              className="relative my-auto w-full max-w-5xl h-[70vh] sm:h-[75vh] flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={lightboxIndex}
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.02 }}
-                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-white/10 select-none flex items-center justify-center"
-                >
-                  <Image
-                    src={btsPhotos[lightboxIndex].src}
-                    alt={btsPhotos[lightboxIndex].alt}
-                    fill
-                    sizes="95vw"
-                    className="object-contain pointer-events-none"
-                    priority
-                  />
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Lightbox Side Navigation Arrows */}
-              <button
-                type="button"
-                onClick={prevLightbox}
-                data-cursor="hover"
-                aria-label="Previous image"
-                className="absolute left-2 sm:-left-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-cream/15 hover:bg-cream/30 text-cream border border-cream/20 backdrop-blur-xl transition-all duration-200 hover:scale-110 cursor-pointer shadow-lg"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-
-              <button
-                type="button"
-                onClick={nextLightbox}
-                data-cursor="hover"
-                aria-label="Next image"
-                className="absolute right-2 sm:-right-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-cream/15 hover:bg-cream/30 text-cream border border-cream/20 backdrop-blur-xl transition-all duration-200 hover:scale-110 cursor-pointer shadow-lg"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Lightbox Bottom Thumbnail Ribbon */}
-            <div
-              className="w-full max-w-4xl flex items-center justify-center gap-2 overflow-x-auto py-2 z-10"
-              onClick={(e) => e.stopPropagation()}
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
-              {btsPhotos.map((photo, i) => {
-                const isActive = lightboxIndex === i;
-                return (
-                  <button
-                    key={photo.src + "_lightbox_" + i}
-                    type="button"
-                    onClick={() => setLightboxIndex(i)}
-                    data-cursor="hover"
-                    className={`relative shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden transition-all duration-300 cursor-pointer ${
-                      isActive
-                        ? "border-2 border-white ring-2 ring-lilac scale-110 opacity-100"
-                        : "border border-white/20 opacity-40 hover:opacity-80"
-                    }`}
-                  >
-                    <Image
-                      src={photo.src}
-                      alt={photo.alt}
-                      fill
-                      sizes="56px"
-                      className="object-cover pointer-events-none"
-                    />
-                  </button>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Footer Credits & Socials (Directly Below Behind The Scenes) */}
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-10 relative z-10 mt-12 md:mt-16 w-full flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-ink/10 pt-6">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-10 relative z-10 mt-16 md:mt-20 w-full flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-ink/10 pt-6">
         <p className="font-body text-xs sm:text-sm text-ink-soft">
           © {new Date().getFullYear()} Ansu V S. All rights reserved.
         </p>
