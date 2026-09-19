@@ -12,6 +12,8 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 type ImageItem = string | { src: string; alt?: string; title?: string; tag?: string };
 
@@ -41,7 +43,6 @@ interface BlurSettings {
 interface InfiniteGalleryProps {
   images: ImageItem[];
   speed?: number;
-  zSpacing?: number;
   visibleCount?: number;
   fadeSettings?: FadeSettings;
   blurSettings?: BlurSettings;
@@ -61,7 +62,9 @@ const DEFAULT_DEPTH_RANGE = 50;
 const MAX_HORIZONTAL_OFFSET = 8;
 const MAX_VERTICAL_OFFSET = 8;
 
-// BTS Development, Designing, Workspace & Architecture placeholders
+// Shared scroll force ref so ScrollTrigger & Wheel can drive 3D scene smoothly
+const globalScrollVelocity = { value: 0 };
+
 export const btsWorkItems: ImageItem[] = [
   {
     src: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
@@ -129,8 +132,8 @@ const createClothMaterial = () => {
         
         vec3 pos = position;
         
-        // Create smooth curving based on scroll force
-        float curveIntensity = scrollForce * 0.3;
+        // Smooth curving based on scroll force
+        float curveIntensity = scrollForce * 0.25;
         
         // Base curve across the plane based on distance from center
         float distanceFromCenter = length(pos.xy);
@@ -187,8 +190,8 @@ const createClothMaterial = () => {
           color = blurred / total;
         }
         
-        // Add subtle lighting effect based on curving
-        float curveHighlight = abs(scrollForce) * 0.05;
+        // Subtle lighting effect based on curving
+        float curveHighlight = abs(scrollForce) * 0.04;
         color.rgb += vec3(curveHighlight * 0.1);
         
         gl_FragColor = vec4(color.rgb, color.a * opacity);
@@ -329,7 +332,7 @@ function GalleryScene({
   const handleWheel = useCallback(
     (event: WheelEvent) => {
       event.preventDefault();
-      setScrollVelocity((prev) => prev + event.deltaY * 0.01 * speed);
+      setScrollVelocity((prev) => prev + event.deltaY * 0.008 * speed);
       setAutoPlay(false);
       lastInteraction.current = Date.now();
     },
@@ -378,17 +381,21 @@ function GalleryScene({
   }, []);
 
   useFrame((state, delta) => {
+    // Merge external scroll trigger velocity
+    const combinedVel = scrollVelocity + globalScrollVelocity.value;
+    globalScrollVelocity.value *= 0.85;
+
     if (autoPlay) {
-      setScrollVelocity((prev) => prev + 0.35 * delta);
+      setScrollVelocity((prev) => prev + 0.3 * delta);
     }
 
-    setScrollVelocity((prev) => prev * 0.95);
+    setScrollVelocity((prev) => prev * 0.94);
 
     const time = state.clock.getElapsedTime();
     materials.forEach((material) => {
       if (material && material.uniforms) {
         material.uniforms.time.value = time;
-        material.uniforms.scrollForce.value = scrollVelocity;
+        material.uniforms.scrollForce.value = combinedVel;
       }
     });
 
@@ -397,7 +404,7 @@ function GalleryScene({
     const totalRange = depthRange;
 
     planesData.current.forEach((plane, i) => {
-      let newZ = plane.z + scrollVelocity * delta * 10;
+      let newZ = plane.z + combinedVel * delta * 10;
       let wrapsForward = 0;
       let wrapsBackward = 0;
 
@@ -526,7 +533,7 @@ function FallbackGallery({ images }: { images: ImageItem[] }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
       {normalizedImages.map((img, i) => (
-        <div key={i} className="aspect-[16/10] rounded-2xl overflow-hidden bg-ink/5 border border-ink/10">
+        <div key={i} className="aspect-[16/10] rounded-2xl overflow-hidden bg-ink/5">
           <img
             src={img.src}
             alt={img.alt || "Behind the scenes"}
@@ -592,12 +599,51 @@ export function InfiniteGalleryCanvas({
 }
 
 export default function BehindTheScenes() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // GSAP ScrollTrigger to pin the section and drive 3D depth smoothly on page scroll
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const mm = gsap.matchMedia();
+
+    // Pin on screens >= 768px (Desktop & iPad)
+    mm.add("(min-width: 768px)", () => {
+      const st = ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: "+=120%",
+        pin: true,
+        scrub: 1.2,
+        anticipatePin: 1,
+        onUpdate: (self) => {
+          // Drive velocity forward/backward as the user scrolls
+          const vel = self.getVelocity() * 0.003;
+          if (Math.abs(vel) > 0.05) {
+            globalScrollVelocity.value += vel;
+          }
+        },
+      });
+
+      return () => {
+        st.kill();
+      };
+    });
+
+    return () => mm.revert();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="behind-the-scenes"
-      className="relative overflow-hidden px-4 sm:px-8 md:px-10 lg:px-12 py-20 md:py-32 border-t border-ink/10 select-none"
+      className="relative overflow-hidden px-4 sm:px-8 md:px-10 lg:px-12 py-16 md:py-24 select-none min-h-screen flex flex-col justify-center"
     >
-      {/* Ambient background aura */}
+      {/* Ambient background aura (No borders) */}
       <div
         aria-hidden
         className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85vw] h-[85vw] max-w-[850px] max-h-[850px] rounded-full opacity-25 blur-[120px]"
@@ -607,14 +653,14 @@ export default function BehindTheScenes() {
         }}
       />
 
-      <div className="max-w-7xl mx-auto flex flex-col items-center">
+      <div className="max-w-7xl mx-auto w-full flex flex-col items-center">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col items-center text-center mb-6 sm:mb-10 relative z-10"
+          className="flex flex-col items-center text-center mb-4 sm:mb-8 relative z-10"
         >
           <span className="font-body text-xs font-semibold uppercase tracking-wider text-ink-soft mb-2.5 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-violet animate-pulse" />
@@ -623,14 +669,17 @@ export default function BehindTheScenes() {
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-ink tracking-tight">
             Workspace, Code &amp; Design.
           </h2>
-          <p className="font-body text-sm sm:text-base text-ink-soft mt-3 max-w-lg">
+          <p className="font-body text-sm sm:text-base text-ink-soft mt-2.5 max-w-lg">
             A glimpse into the late-night sprints, Figma wireframe iterations, terminal shaders, and daily studio setups.
           </p>
         </motion.div>
 
-        {/* 3D Infinite WebGL Gallery Stage */}
-        <div className="relative w-full rounded-3xl overflow-hidden bg-ink/[0.02] border border-ink/10 shadow-[0_16px_48px_rgba(32,28,38,0.06)] backdrop-blur-xl">
-          {/* Subtle Ambient Title watermark */}
+        {/* 3D Infinite WebGL Gallery Stage - 100% Borderless & Seamless */}
+        <div
+          ref={containerRef}
+          className="relative w-full rounded-3xl overflow-hidden bg-transparent"
+        >
+          {/* Ambient Title watermark */}
           <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center select-none overflow-hidden">
             <span className="font-serif italic font-normal text-[15vw] md:text-[12vw] text-ink/5 tracking-tight whitespace-nowrap leading-none select-none">
               Behind the Code
@@ -640,14 +689,14 @@ export default function BehindTheScenes() {
           {/* Interactive WebGL Scene */}
           <InfiniteGalleryCanvas
             images={btsWorkItems}
-            className="w-full h-[420px] sm:h-[500px] md:h-[600px] cursor-grab active:cursor-grabbing"
+            className="w-full h-[420px] sm:h-[500px] md:h-[580px] cursor-grab active:cursor-grabbing"
           />
 
-          {/* Bottom Interactive Hint Banner */}
-          <div className="relative z-10 p-4 border-t border-ink/8 bg-cream/70 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          {/* Bottom Interactive Hint Banner - Seamless Borderless Style */}
+          <div className="relative z-10 py-3 px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#25D366] animate-ping" />
-              <span className="font-mono text-[10.5px] sm:text-[11px] font-semibold tracking-wider text-ink uppercase">
+              <span className="font-mono text-[10.5px] sm:text-[11px] font-semibold tracking-wider text-ink/80 uppercase">
                 Interactive 3D Cloth Tunnel
               </span>
             </div>
@@ -660,3 +709,4 @@ export default function BehindTheScenes() {
     </section>
   );
 }
+
