@@ -57,7 +57,7 @@ export default function MailSlider() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-3 w-full max-w-sm mx-auto select-none mt-6">
+    <div className="flex flex-col items-center gap-3 w-full max-w-sm mx-auto select-none mt-2">
       {/* iOS Slider Bar */}
       <div className="relative w-full h-14 rounded-full bg-ink/8 border border-ink/15 backdrop-blur-md p-1.5 flex items-center justify-between overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]">
         {/* Left Track Ambient Fill (Lilac/Violet) */}
@@ -75,38 +75,50 @@ export default function MailSlider() {
         {/* Left Track Zone: Open Mail */}
         <button
           onClick={triggerMail}
-          className="relative z-10 flex-1 h-full flex items-center justify-start pl-4 gap-1.5 text-xs font-body font-medium transition-colors text-ink/75 hover:text-ink text-left"
+          className="relative z-10 flex-1 h-full flex items-center justify-start pl-3.5 gap-1.5 text-xs font-body font-medium transition-colors text-ink hover:text-violet text-left group"
           data-cursor="hover"
           title="Click or slide left to open mail app"
         >
           <motion.span
             style={{
-              opacity: useTransform(x, [-90, -20, 0], [1, 0.6, 0.35]),
+              opacity: useTransform(x, [-90, -20, 0], [1, 0.9, 0.75]),
               scale: useTransform(x, [-90, 0], [1.05, 1]),
             }}
             className="flex items-center gap-1.5 text-ink font-semibold"
           >
-            <span className="text-sm transition-transform group-hover:-translate-x-0.5">←</span>
-            <span>Direct Mail</span>
+            <span className="text-sm text-violet transition-transform group-hover:-translate-x-0.5">←</span>
+            <span className="p-1 rounded-full bg-violet/15 text-violet flex items-center justify-center shrink-0">
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+              </svg>
+            </span>
+            <span className="truncate group-hover:text-violet transition-colors">Direct Mail</span>
           </motion.span>
         </button>
 
         {/* Right Track Zone: Copy Email */}
         <button
           onClick={triggerCopy}
-          className="relative z-10 flex-1 h-full flex items-center justify-end pr-4 gap-1.5 text-xs font-body font-medium transition-colors text-ink/75 hover:text-ink text-right"
+          className="relative z-10 flex-1 h-full flex items-center justify-end pr-3.5 gap-1.5 text-xs font-body font-medium transition-colors text-ink hover:text-sky-600 text-right group"
           data-cursor="hover"
           title="Click or slide right to copy address"
         >
           <motion.span
             style={{
-              opacity: useTransform(x, [0, 20, 90], [0.35, 0.6, 1]),
+              opacity: useTransform(x, [0, 20, 90], [0.75, 0.9, 1]),
               scale: useTransform(x, [0, 90], [1, 1.05]),
             }}
             className="flex items-center gap-1.5 text-ink font-semibold"
           >
-            <span>Copy Email</span>
-            <span className="text-sm transition-transform group-hover:translate-x-0.5">→</span>
+            <span className="truncate group-hover:text-sky-600 transition-colors">Copy Email</span>
+            <span className="p-1 rounded-full bg-sky/35 text-ink flex items-center justify-center shrink-0">
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+              </svg>
+            </span>
+            <span className="text-sm text-sky-600 transition-transform group-hover:translate-x-0.5">→</span>
           </motion.span>
         </button>
 

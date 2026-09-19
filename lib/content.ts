@@ -213,6 +213,9 @@ export const faqs: FAQ[] = [
 
 export const email = "ansuvs047@gmail.com";
 export const calLink = "mailto:ansuvs047@gmail.com?subject=Project%20Inquiry%20—%2015-Min%20Intro%20Call";
+export const phoneNumber = "+916282509301";
+export const formattedPhoneNumber = "+91 62825 09301";
 export const whatsappNumber = "+91 6282509301";
 export const whatsappLink =
   "https://wa.me/916282509301?text=Hi%20Ansu%2C%20I%20came%20across%20your%20portfolio%20and%20would%20love%20to%20discuss%20a%20project!";
+
