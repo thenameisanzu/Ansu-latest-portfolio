@@ -50,13 +50,13 @@ export default function AethraSection() {
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-10%" }}
-          transition={{ duration: 0.7, delay: 0.15 }}
-          className="md:col-span-5 flex flex-col items-center md:items-end justify-center gap-6 relative"
+          transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          className="md:col-span-5 flex flex-col items-center md:items-center justify-center gap-5 relative"
         >
           {/* Ambient Emerald Logo Glow */}
           <div
             aria-hidden
-            className="pointer-events-none absolute top-1/2 left-1/2 md:left-auto md:right-12 -translate-x-1/2 md:translate-x-0 -translate-y-1/2 w-48 h-48 rounded-full bg-[#22c55e]/20 blur-3xl"
+            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-[#22c55e]/25 blur-2xl"
           />
 
           <motion.a
@@ -64,17 +64,17 @@ export default function AethraSection() {
             target="_blank"
             rel="noreferrer"
             data-cursor="hover"
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             className="group block relative z-10"
             title="Visit Aethra Digital Solutions"
           >
             <Image
               src="/images/aethra-logo.png"
               alt="Aethra Digital Solutions Logo"
-              width={260}
-              height={360}
-              className="w-36 sm:w-44 md:w-52 lg:w-56 h-auto object-contain filter drop-shadow-[0_12px_28px_rgba(74,222,128,0.35)] group-hover:scale-105 group-hover:drop-shadow-[0_16px_36px_rgba(74,222,128,0.55)] transition-all duration-300"
+              width={180}
+              height={250}
+              className="w-20 sm:w-24 md:w-28 lg:w-32 h-auto object-contain filter drop-shadow-[0_8px_20px_rgba(74,222,128,0.35)] group-hover:scale-105 group-hover:drop-shadow-[0_12px_28px_rgba(74,222,128,0.55)] transition-all duration-300"
               priority
             />
           </motion.a>
@@ -84,10 +84,10 @@ export default function AethraSection() {
             target="_blank"
             rel="noreferrer"
             data-cursor="hover"
-            className="group relative inline-flex items-center gap-3 font-body text-sm font-medium p-[1px] rounded-full overflow-hidden transition-transform duration-300 hover:scale-105 shadow-md"
+            className="group relative inline-flex items-center gap-2 font-body text-xs sm:text-sm font-medium p-[1px] rounded-full overflow-hidden transition-transform duration-300 hover:scale-105 shadow-md"
           >
             <span className="absolute inset-0 bg-gradient-to-r from-sky via-lilac to-[#22c55e] opacity-75 group-hover:opacity-100 transition-opacity" />
-            <span className="relative z-10 px-6 py-3 rounded-full bg-ink text-cream group-hover:bg-cream group-hover:text-ink transition-colors flex items-center gap-2">
+            <span className="relative z-10 px-5 py-2.5 rounded-full bg-ink text-cream group-hover:bg-cream group-hover:text-ink transition-colors flex items-center gap-2">
               <span>aethrasolutions.in</span>
               <span className="text-xs transition-transform duration-300 group-hover:translate-x-0.5">↗</span>
             </span>

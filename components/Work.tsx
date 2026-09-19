@@ -31,10 +31,11 @@ export default function Work() {
           trigger: section,
           start: "top top",
           end: () => `+=${distance}`,
-          scrub: 1.2,
+          scrub: 1,
           pin: true,
+          pinSpacing: true,
           invalidateOnRefresh: true,
-          anticipatePin: 1,
+          anticipatePin: 0,
         },
       });
 
@@ -53,7 +54,7 @@ export default function Work() {
         <div className="lg:h-screen lg:flex lg:items-center lg:overflow-hidden">
           <div
             ref={trackRef}
-            className="flex flex-col lg:flex-row gap-6 px-5 sm:px-8 md:px-10 lg:w-max max-w-5xl lg:max-w-none mx-auto lg:mx-0"
+            className="flex flex-col lg:flex-row gap-6 px-5 sm:px-8 md:px-10 lg:w-max max-w-5xl lg:max-w-none mx-auto lg:mx-0 will-change-transform transform-gpu"
           >
             {/* Header Column */}
             <div className="lg:w-[28vw] lg:shrink-0 flex flex-col justify-end pb-4 lg:pb-0 pt-2 lg:pt-0">
