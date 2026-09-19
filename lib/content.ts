@@ -66,7 +66,7 @@ export const projects: Project[] = [
     blurb: "A luxury brand identity and premium user experience designed for Kottayam's premier body art collective with dynamic portfolio exploration.",
     color: "#141416",
     dark: true,
-    image: "/images/works/zeus-tattoos.jpg",
+    image: "/images/works/zeus-tattoos.png",
     year: "2026",
     link: "https://zeus-tattoo.vercel.app/",
     stack: ["Next.js", "Tailwind CSS", "Framer Motion", "Lenis"],
