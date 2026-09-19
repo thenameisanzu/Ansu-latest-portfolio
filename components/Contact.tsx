@@ -47,18 +47,18 @@ export default function Contact() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7, delay: 0.1 }}
-        className="relative z-10 w-full max-w-4xl flex flex-col items-center px-2"
+        className="relative z-10 w-full max-w-5xl flex flex-col items-center px-1 sm:px-2"
       >
-        <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-ink mb-8">
+        <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-ink mb-6 sm:mb-8">
           Let’s start a conversation
         </h2>
 
         {/* Grouped Contact Channels Grid */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {/* 1. Email Group */}
-          <div className="flex flex-col items-center justify-between p-6 sm:p-8 rounded-3xl bg-ink/[0.03] border border-ink/10 backdrop-blur-md hover:border-violet/30 hover:shadow-[0_12px_32px_rgba(155,142,199,0.12)] transition-all duration-300">
-            <div className="flex flex-col items-center gap-2 mb-4">
-              <span className="inline-flex items-center gap-1.5 text-xs font-body font-semibold text-violet bg-violet/10 px-3 py-1 rounded-full">
+          <div className="flex flex-col items-center justify-between p-5 sm:p-6 md:p-6 lg:p-8 rounded-3xl bg-ink/[0.03] border border-ink/10 backdrop-blur-md hover:border-violet/30 hover:shadow-[0_12px_32px_rgba(155,142,199,0.12)] transition-all duration-300 min-w-0">
+            <div className="flex flex-col items-center gap-2 mb-3 sm:mb-4 w-full min-w-0">
+              <span className="inline-flex items-center gap-1.5 text-xs font-body font-semibold text-violet bg-violet/10 px-3 py-1 rounded-full shrink-0">
                 <span>✉</span>
                 <span>Direct Mail</span>
               </span>
@@ -66,8 +66,8 @@ export default function Contact() {
                 <a
                   href={`mailto:${email}?subject=Project%20Inquiry%20—%20Ansu%20V%20S`}
                   data-cursor="hover"
-                  className="font-display font-extrabold text-ink text-xl sm:text-2xl lg:text-[1.7rem] tracking-tight hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-violet hover:to-sky transition-all duration-300 break-all py-1"
-                  title="Click to email"
+                  className="block w-full font-display font-extrabold text-ink text-base sm:text-lg md:text-[1.2rem] lg:text-2xl xl:text-[1.55rem] tracking-tight hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-violet hover:to-sky transition-all duration-300 whitespace-nowrap overflow-hidden text-ellipsis py-1 text-center"
+                  title={email}
                 >
                   {email}
                 </a>
@@ -81,9 +81,9 @@ export default function Contact() {
           </div>
 
           {/* 2. Contact Number Group (WhatsApp / Direct Call) */}
-          <div className="flex flex-col items-center justify-between p-6 sm:p-8 rounded-3xl bg-ink/[0.03] border border-ink/10 backdrop-blur-md hover:border-[#25D366]/30 hover:shadow-[0_12px_32px_rgba(37,211,102,0.12)] transition-all duration-300">
-            <div className="flex flex-col items-center gap-2 mb-4">
-              <span className="inline-flex items-center gap-1.5 text-xs font-body font-semibold text-[#128C7E] bg-[#25D366]/10 px-3 py-1 rounded-full">
+          <div className="flex flex-col items-center justify-between p-5 sm:p-6 md:p-6 lg:p-8 rounded-3xl bg-ink/[0.03] border border-ink/10 backdrop-blur-md hover:border-[#25D366]/30 hover:shadow-[0_12px_32px_rgba(37,211,102,0.12)] transition-all duration-300 min-w-0">
+            <div className="flex flex-col items-center gap-2 mb-3 sm:mb-4 w-full min-w-0">
+              <span className="inline-flex items-center gap-1.5 text-xs font-body font-semibold text-[#128C7E] bg-[#25D366]/10 px-3 py-1 rounded-full shrink-0">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[#25D366]" />
@@ -96,7 +96,7 @@ export default function Contact() {
                   target="_blank"
                   rel="noreferrer"
                   data-cursor="hover"
-                  className="font-display font-extrabold text-ink text-xl sm:text-2xl lg:text-[1.7rem] tracking-tight hover:text-[#128C7E] transition-colors py-1"
+                  className="block w-full font-display font-extrabold text-ink text-base sm:text-lg md:text-[1.2rem] lg:text-2xl xl:text-[1.55rem] tracking-tight hover:text-[#128C7E] transition-colors py-1 text-center whitespace-nowrap"
                   title="Click to chat on WhatsApp"
                 >
                   {formattedPhoneNumber}
