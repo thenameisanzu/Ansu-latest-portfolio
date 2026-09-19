@@ -8,7 +8,15 @@ export default function Magnetic({ children }: { children: ReactNode }) {
 
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = ref.current;
-    if (!el || window.matchMedia("(hover: none)").matches) return;
+    if (
+      !el ||
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0 ||
+      window.matchMedia("(pointer: coarse)").matches ||
+      window.matchMedia("(hover: none)").matches
+    ) {
+      return;
+    }
     const rect = el.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
@@ -32,3 +40,4 @@ export default function Magnetic({ children }: { children: ReactNode }) {
     </div>
   );
 }
+

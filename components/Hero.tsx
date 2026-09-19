@@ -32,7 +32,13 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia("(hover: none)").matches) return;
+    const isTouch =
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0 ||
+      window.matchMedia("(pointer: coarse)").matches ||
+      window.matchMedia("(hover: none)").matches;
+
+    if (isTouch) return;
     const blob = blobRef.current;
     const section = sectionRef.current;
     if (!blob || !section) return;

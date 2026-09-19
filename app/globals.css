@@ -93,10 +93,10 @@ body {
   animation: status-pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-@media (hover: none) {
+@media (hover: none), (pointer: coarse) {
   .cursor-dot,
   .cursor-ring {
-    display: none;
+    display: none !important;
   }
 }
 

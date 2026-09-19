@@ -22,9 +22,11 @@ export default function SmoothScroll({
     if (prefersReduced) return;
 
     const lenis = new Lenis({
-      duration: 1.1,
+      duration: 1.05,
       easing: (t) => 1 - Math.pow(1 - t, 3),
       smoothWheel: true,
+      syncTouch: false, // Ensure native momentum on touch/iPad
+      touchMultiplier: 1.2,
     });
     lenisRef.current = lenis;
 
@@ -46,3 +48,4 @@ export default function SmoothScroll({
 
   return <>{children}</>;
 }
+

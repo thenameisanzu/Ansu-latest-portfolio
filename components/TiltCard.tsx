@@ -25,7 +25,11 @@ export default function TiltCard({
   const [isHoverDevice, setIsHoverDevice] = useState(false);
 
   useEffect(() => {
-    setIsHoverDevice(window.matchMedia("(hover: hover)").matches);
+    const isTouch =
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0 ||
+      window.matchMedia("(pointer: coarse)").matches;
+    setIsHoverDevice(!isTouch && window.matchMedia("(hover: hover)").matches);
   }, []);
 
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -45,6 +49,7 @@ export default function TiltCard({
   };
 
   const onMouseLeave = () => {
+    if (!isHoverDevice) return;
     setTilt({ x: 0, y: 0 });
     setGlarePos((prev) => ({ ...prev, opacity: 0 }));
   };
@@ -56,9 +61,11 @@ export default function TiltCard({
       onMouseLeave={onMouseLeave}
       onClick={onClick}
       style={{
-        transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+        transform: isHoverDevice
+          ? `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`
+          : undefined,
         transition: "transform 0.18s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.3s ease",
-        transformStyle: "preserve-3d",
+        transformStyle: isHoverDevice ? "preserve-3d" : undefined,
         ...style,
       }}
       className={`relative ${className}`}
@@ -79,3 +86,4 @@ export default function TiltCard({
     </div>
   );
 }
+
