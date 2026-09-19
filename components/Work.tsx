@@ -62,7 +62,7 @@ export default function Work() {
                   Selected work
                 </span>
                 <span className="font-mono text-xs text-ink/50 font-medium">
-                  (06)
+                  ({String(projects.length).padStart(2, "0")})
                 </span>
               </div>
               <h2 className="font-display font-extrabold text-ink text-3xl sm:text-4xl md:text-5xl lg:text-5xl leading-[0.98] tracking-tight">
