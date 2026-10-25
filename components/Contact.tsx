@@ -18,55 +18,55 @@ import {
 // Behind The Scenes photography & studio moments
 const btsPhotos = [
   {
-    src: "/images/Screenshot_20260919_205734.jpg",
+    src: "/images/Screenshot_20260919_205734.webp",
     alt: "Studio Engineering & Deep Work",
   },
   {
-    src: "/images/IMG_5898.jpg",
+    src: "/images/IMG_5898.webp",
     alt: "Creative Session & Prototyping",
   },
   {
-    src: "/images/IMG_20260612_215448.jpg",
+    src: "/images/IMG_20260612_215448.webp",
     alt: "Behind The Scenes 03",
   },
   {
-    src: "/images/IMG_20260704_083342.jpg",
+    src: "/images/IMG_20260704_083342.webp",
     alt: "Behind The Scenes 04",
   },
   {
-    src: "/images/IMG_20260707_212337.jpg",
+    src: "/images/IMG_20260707_212337.webp",
     alt: "Behind The Scenes 05",
   },
   {
-    src: "/images/IMG_20260707_214524.jpg",
+    src: "/images/IMG_20260707_214524.webp",
     alt: "Behind The Scenes 06",
   },
   {
-    src: "/images/IMG_20260726_101246.jpg",
+    src: "/images/IMG_20260726_101246.webp",
     alt: "Behind The Scenes 07",
   },
   {
-    src: "/images/IMG_20260831_143005.jpg",
+    src: "/images/IMG_20260831_143005.webp",
     alt: "Behind The Scenes 08",
   },
   {
-    src: "/images/IMG_20260901_095618.jpg",
+    src: "/images/IMG_20260901_095618.webp",
     alt: "Behind The Scenes 09",
   },
   {
-    src: "/images/IMG_20260901_213522.jpg",
+    src: "/images/IMG_20260901_213522.webp",
     alt: "Behind The Scenes 10",
   },
   {
-    src: "/images/IMG_20260905_212222.jpg",
+    src: "/images/IMG_20260905_212222.webp",
     alt: "Behind The Scenes 11",
   },
   {
-    src: "/images/IMG_20260913_233739.jpg",
+    src: "/images/IMG_20260913_233739.webp",
     alt: "Behind The Scenes 12",
   },
   {
-    src: "/images/IMG_20260916_124956.jpg",
+    src: "/images/IMG_20260916_124956.webp",
     alt: "Behind The Scenes 13",
   },
 ];

@@ -32,11 +32,11 @@ export default function Work() {
           trigger: section,
           start: "top top",
           end: () => `+=${distance}`,
-          scrub: 1,
+          scrub: 0.65,
           pin: true,
           pinSpacing: true,
           invalidateOnRefresh: true,
-          anticipatePin: 0,
+          anticipatePin: 1,
         },
       });
 
@@ -89,9 +89,11 @@ export default function Work() {
                       src={p.image}
                       alt={p.name}
                       fill
-                      sizes="(max-width: 1024px) 90vw, 45vw"
+                      sizes="(max-width: 768px) 95vw, (max-width: 1280px) 45vw, 42vw"
                       className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
-                      quality={85}
+                      quality={80}
+                      priority={i < 2}
+                      loading={i < 2 ? "eager" : "lazy"}
                     />
                   )}
 
