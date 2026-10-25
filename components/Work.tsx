@@ -108,7 +108,7 @@ export default function Work() {
                         View details ↗
                       </span>
                       <span className="font-mono text-xs font-semibold text-cream/60">
-                        0{i + 1}
+                        {String(i + 1).padStart(2, "0")}
                       </span>
                     </div>
                   </div>
