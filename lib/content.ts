@@ -13,6 +13,18 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    name: "The Biryani Co.",
+    tag: "Artisanal dum biryani & cloud kitchen",
+    blurb: "A fiery, high-energy digital storefront and online ordering platform for an artisanal slow-cooked dum pukht cloud kitchen in Kottayam, featuring cinematic video storytelling and interactive takeaway menus.",
+    color: "#ff5500",
+    dark: true,
+    image: "/images/works/biryani-co.webp",
+    year: "2026",
+    link: "https://biriyani-company.vercel.app/",
+    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "GSAP"],
+    deliverables: ["Cinematic Hardwood Dum UI", "Interactive Takeaway Menu", "Direct Ordering Flow"],
+  },
+  {
     name: "Smilora Dental Clinic",
     tag: "Modern dental & aesthetics",
     blurb: "A hyper-minimalist, precision-engineered dental clinic website with interactive treatment explorer, specialist profiles, and frictionless WhatsApp appointment booking.",
